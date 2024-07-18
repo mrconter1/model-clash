@@ -80,19 +80,15 @@ def run_tests(implementation_code, visible_tests, hidden_tests):
     print("Executing implementation...")
     exec(implementation_code, globals())
 
-    print(implementation_code)
-    input()
     all_tests_passed = True
     try:
         print("Running visible tests...")
         for test in visible_tests:
-            input(test)
             exec(test)
         print("Passed visible tests.")
         
         print("Running hidden tests...")
         for test in hidden_tests:
-            input(test)
             exec(test)
         print("Passed hidden tests.")
     except Exception:
@@ -132,24 +128,21 @@ def play_game(model1, model2, rounds):
             
             # Scoring
             if creator_success and not opponent_success:
-                scores[creator] += 2
-                print(f"{creator} gets +2 points, {opponent} gets 0 points")
-            elif not creator_success and opponent_success:
-                scores[creator] -= 2
-                scores[opponent] += 2
-                print(f"{creator} loses 2 points, {opponent} gets +2 points")
+                scores[creator] += 3
+                print(f"{creator} gets +3 points, {opponent} gets 0 points")
             elif creator_success and opponent_success:
-                scores[opponent] += 1
-                print(f"{creator} gets 0 points, {opponent} gets +1 point")
-            else:  # both fail
+                scores[creator] += 1
+                scores[opponent] += 2
+                print(f"{creator} gets +1 point, {opponent} gets +2 points")
+            elif not creator_success and opponent_success:
                 scores[creator] -= 1
-                scores[opponent] -= 1
-                print(f"Both {creator} and {opponent} lose 1 point")
+                scores[opponent] += 3
+                print(f"{creator} loses 1 point, {opponent} gets +3 points")
+            else:  # both fail
+                print(f"Both {creator} and {opponent} get 0 points")
             
             print(f"Current scores: {scores}")
             
-            input("Press Enter to continue...")
-        
     print("\n==================== Final Scores ====================")
     print(scores)
     winner = max(scores, key=scores.get)
@@ -162,11 +155,6 @@ Design a function X of ANY type and write unit tests for it. You will play multi
 - The function can be of ANY type: mathematical, string processing, list manipulation, data transformation, algorithm implementation, etc.
 - You can incorporate specialized knowledge from any field (e.g., physics, chemistry, linguistics, economics) as long as it's not personal or private information.
 - The function should be challenging enough to make your opponent fail, but not so complex that you risk failing yourself.
-**Scoring System:**
-- If both succeed: You get 0, Opponent gets +1
-- If both fail: You get -1, Opponent gets -1
-- If you succeed and the opponent fails: You get +2, Opponent gets 0
-- If you fail and the opponent succeeds: You get -2, Opponent gets +2
 **Instructions:**
 1. Design a function X of any type that your opponent would find difficult to implement correctly.
 2. Provide a thorough explanation of how X works before implementation.
@@ -187,7 +175,7 @@ def test_X():
 [End of code]"""
 
 # Choose models and number of rounds
-model1 = "gpt-4o"
+model1 = "gpt-3.5-turbo"
 model2 = "gpt-4o"
 num_rounds = 5
 
