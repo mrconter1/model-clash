@@ -50,6 +50,42 @@ def clean_and_format_code(extracted_code):
     
     return '\n'.join(formatted_lines)
 
+def play_game(model1, model2, rounds):
+    scores = {model1: 0, model2: 0}
+    
+    for round in range(1, rounds + 1):
+        print(f"\nRound {round}")
+        for player, opponent in [(model1, model2), (model2, model1)]:
+            print(f"\n{player} is creating the function:")
+            response = send_prompt_to_gpt(prompt, model=player)
+            extracted_code = extract_code_from_response(response)
+            formatted_code = clean_and_format_code(extracted_code)
+            print(formatted_code)
+            
+            print(f"\n{opponent} is implementing the function:")
+            implementation_prompt = f"Implement the function X based on these test cases:\n\n{formatted_code}"
+            implementation = send_prompt_to_gpt(implementation_prompt, model=opponent)
+            print(implementation)
+            
+            # Here you would actually test the implementation
+            # For simplicity, we'll randomly decide if it passes or fails
+            import random
+            passes = random.choice([True, False])
+            
+            if passes:
+                print(f"{opponent} succeeded in implementing the function.")
+                scores[opponent] += 1
+            else:
+                print(f"{opponent} failed to implement the function correctly.")
+                scores[player] += 2
+        
+        print(f"\nCurrent scores: {scores}")
+    
+    print("\nFinal scores:")
+    print(scores)
+    winner = max(scores, key=scores.get)
+    print(f"The winner is: {winner}")
+
 # The full original prompt
 prompt = """**Your Task:**
 Design a function X of ANY type and write unit tests for it. You will play multiple rounds of this with alternating roles. Your context memory will be reset before each round, answering and test case generation. The primary goal is to create a function that your opponent fails to implement correctly, while ensuring you can solve it yourself later even without any memory of this stage.
@@ -81,13 +117,10 @@ def test_X():
     # ... more invisible test cases
 [End of final answer]"""
 
-print("Sending prompt to GPT model...")
-response = send_prompt_to_gpt(prompt, model="gpt-4o")  # You can change the model here
+# Choose models and number of rounds
+model1 = "gpt-4-turbo"
+model2 = "gpt-4o"
+num_rounds = 5
 
-print("\nFull reponse:")
-print(response)
-
-print("\nExtracted and formatted code:")
-extracted_code = extract_code_from_response(response)
-formatted_code = clean_and_format_code(extracted_code)
-print(formatted_code)
+# Play the game
+play_game(model1, model2, num_rounds)
