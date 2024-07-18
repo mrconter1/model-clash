@@ -78,22 +78,43 @@ Please provide your implementation below:
 
 def run_tests(implementation_code, visible_tests, hidden_tests):
     print("Executing implementation...")
-    exec(implementation_code, globals())
+    try:
+        exec(implementation_code, globals())
+    except Exception as e:
+        print(f"Error in implementation: {str(e)}")
+        return False
 
     all_tests_passed = True
-    try:
-        print("Running visible tests...")
-        for test in visible_tests:
+    print("Running visible tests...")
+    for test in visible_tests:
+        try:
             exec(test)
+        except AssertionError:
+            print(f"Visible test failed: {test}")
+            all_tests_passed = False
+        except Exception as e:
+            print(f"Error in visible test: {test}")
+            print(f"Error message: {str(e)}")
+            all_tests_passed = False
+    
+    if all_tests_passed:
         print("Passed visible tests.")
-        
         print("Running hidden tests...")
         for test in hidden_tests:
-            exec(test)
+            try:
+                exec(test)
+            except AssertionError:
+                print(f"Hidden test failed: {test}")
+                all_tests_passed = False
+            except Exception as e:
+                print(f"Error in hidden test: {test}")
+                print(f"Error message: {str(e)}")
+                all_tests_passed = False
+    
+    if all_tests_passed:
         print("Passed hidden tests.")
-    except Exception:
-        print(f"Test failed!")
-        all_tests_passed = False
+    else:
+        print("Some tests failed.")
     
     print("Cleaning up global namespace...")
     if 'X' in globals():
