@@ -77,97 +77,55 @@ Please provide your implementation below:
     return prompt
 
 def run_tests(implementation_code, visible_tests, hidden_tests):
-    print("Executing implementation...")
     try:
         exec(implementation_code, globals())
-    except Exception as e:
-        print(f"Error in implementation: {str(e)}")
+    except Exception:
         return False
 
-    all_tests_passed = True
-    print("Running visible tests...")
-    for test in visible_tests:
+    for test in visible_tests + hidden_tests:
         try:
             exec(test)
-        except AssertionError:
-            print(f"Visible test failed: {test}")
-            all_tests_passed = False
-        except Exception as e:
-            print(f"Error in visible test: {test}")
-            print(f"Error message: {str(e)}")
-            all_tests_passed = False
+        except:
+            return False
     
-    if all_tests_passed:
-        print("Passed visible tests.")
-        print("Running hidden tests...")
-        for test in hidden_tests:
-            try:
-                exec(test)
-            except AssertionError:
-                print(f"Hidden test failed: {test}")
-                all_tests_passed = False
-            except Exception as e:
-                print(f"Error in hidden test: {test}")
-                print(f"Error message: {str(e)}")
-                all_tests_passed = False
-    
-    if all_tests_passed:
-        print("Passed hidden tests.")
-    else:
-        print("Some tests failed.")
-    
-    print("Cleaning up global namespace...")
     if 'X' in globals():
         del globals()['X']
-    print("Cleanup complete.\n")
     
-    return all_tests_passed
+    return True
 
 def play_game(model1, model2, rounds):
     scores = {model1: 0, model2: 0}
     
     for round in range(1, rounds + 1):
-        print(f"\n==================== Round {round} ====================")
+        print(f"\nRound {round}")
         for creator, opponent in [(model1, model2), (model2, model1)]:
-            print(f"\n---------- {creator} is creating a challenge ----------")
+            print(f"{creator} challenge:")
             challenge_response = send_prompt_to_gpt(prompt, model=creator)
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             
-            # Creator's attempt
-            print(f"\n---------- {creator} is implementing their own challenge ----------")
-            creator_implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
-            creator_implementation_response = send_prompt_to_gpt(creator_implementation_prompt, model=creator)
-            creator_implementation_code = extract_code_from_response(creator_implementation_response)
-            creator_success = run_tests(creator_implementation_code, visible_tests, hidden_tests)
+            creator_success = run_tests(extract_code_from_response(send_prompt_to_gpt(create_implementation_prompt('\n'.join(visible_tests)), model=creator)), visible_tests, hidden_tests)
+            opponent_success = run_tests(extract_code_from_response(send_prompt_to_gpt(create_implementation_prompt('\n'.join(visible_tests)), model=opponent)), visible_tests, hidden_tests)
             
-            # Opponent's attempt
-            print(f"\n---------- {opponent} is trying to solve the challenge ----------")
-            opponent_implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
-            opponent_implementation_response = send_prompt_to_gpt(opponent_implementation_prompt, model=opponent)
-            opponent_implementation_code = extract_code_from_response(opponent_implementation_response)
-            opponent_success = run_tests(opponent_implementation_code, visible_tests, hidden_tests)
-            
-            # Scoring
             if creator_success and not opponent_success:
                 scores[creator] += 3
-                print(f"{creator} gets +3 points, {opponent} gets 0 points")
+                print(f"  {creator}: +3, {opponent}: 0")
             elif creator_success and opponent_success:
                 scores[creator] += 1
                 scores[opponent] += 2
-                print(f"{creator} gets +1 point, {opponent} gets +2 points")
+                print(f"  {creator}: +1, {opponent}: +2")
             elif not creator_success and opponent_success:
                 scores[creator] -= 1
                 scores[opponent] += 3
-                print(f"{creator} loses 1 point, {opponent} gets +3 points")
-            else:  # both fail
-                print(f"Both {creator} and {opponent} get 0 points")
-            
-            print(f"Current scores: {scores}")
-            
-    print("\n==================== Final Scores ====================")
+                print(f"  {creator}: -1, {opponent}: +3")
+            else:
+                print(f"  Both: 0")
+        
+        print(f"Scores: {scores}")
+    
+    print("\nFinal Scores:")
     print(scores)
     winner = max(scores, key=scores.get)
-    print(f"The winner is: {winner}")
+    print(f"Winner: {winner}")
 
 # The full original prompt
 prompt = """**Your Task:**
@@ -197,8 +155,8 @@ def test_X():
 
 # Choose models and number of rounds
 model1 = "gpt-3.5-turbo"
-model2 = "gpt-4o"
-num_rounds = 5
+model2 = "gpt-4"
+num_rounds = 25
 
 # Play the game
 play_game(model1, model2, num_rounds)
