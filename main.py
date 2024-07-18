@@ -62,6 +62,7 @@ Your task:
 3. Implement function X to pass all the given test cases.
 4. Write your implementation between the [Start of code] and [End of code] tags.
 5. There are also hidden test cases that you will need to pass as well.
+6. Only the X (should be named X) should be present inside the tags.
 
 Please provide your implementation below:
 
