@@ -28,7 +28,7 @@ def extract_code_from_response(response):
     else:
         return "No code found between [Start of code] and [End of code]"
 
-def clean_and_format_code(extracted_code):
+def extract_test_cases(extracted_code):
     code_lines = extracted_code.split('\n')
     
     visible_tests = []
@@ -54,7 +54,7 @@ def clean_and_format_code(extracted_code):
     
     return visible_tests, hidden_tests
 
-def create_opponent_prompt(formatted_code):
+def create_implementation_prompt(formatted_code):
     prompt = f"""Based on the following test cases, figure out what the function X does and implement it. Write your implementation between [Start of code] and [End of code] tags.
 
 Test cases:
@@ -66,7 +66,7 @@ Your task:
 3. Implement function X to pass all the given test cases.
 4. Write your implementation between the [Start of code] and [End of code] tags.
 5. There are also hidden test cases that you will need to pass as well.
-6. Only the X (should be named X) should be present inside the tags.
+6. Only the function X (should be named X) should be present inside the tags.
 
 Please provide your implementation below:
 
@@ -76,56 +76,79 @@ Please provide your implementation below:
 """
     return prompt
 
+def run_tests(implementation_code, visible_tests, hidden_tests):
+    print("Executing implementation...")
+    exec(implementation_code, globals())
+
+    print(implementation_code)
+    input()
+    all_tests_passed = True
+    try:
+        print("Running visible tests...")
+        for test in visible_tests:
+            input(test)
+            exec(test)
+        print("Passed visible tests.")
+        
+        print("Running hidden tests...")
+        for test in hidden_tests:
+            input(test)
+            exec(test)
+        print("Passed hidden tests.")
+    except Exception:
+        print(f"Test failed!")
+        all_tests_passed = False
+    
+    print("Cleaning up global namespace...")
+    if 'X' in globals():
+        del globals()['X']
+    print("Cleanup complete.\n")
+    
+    return all_tests_passed
+
 def play_game(model1, model2, rounds):
     scores = {model1: 0, model2: 0}
     
     for round in range(1, rounds + 1):
         print(f"\n==================== Round {round} ====================")
-        for player, opponent in [(model1, model2), (model2, model1)]:
-            print(f"\n---------- {player} is creating a challenge ----------")
-            challenge_response = send_prompt_to_gpt(prompt, model=player)
-            challenge_code = extract_code_from_response(challenge_response)
-            visible_tests, hidden_tests = clean_and_format_code(challenge_code)
-            implementation_prompt = create_opponent_prompt('\n'.join(visible_tests))
-            print(f"Prompt for {opponent}:\n{implementation_prompt}\n")
+        for creator, opponent in [(model1, model2), (model2, model1)]:
+            print(f"\n---------- {creator} is creating a challenge ----------")
+            challenge_response = send_prompt_to_gpt(prompt, model=creator)
+            visible_tests, hidden_tests = extract_test_cases(challenge_response)
             
-            print(f"---------- {opponent} is trying to solve the challange ----------")
-            implementation_response = send_prompt_to_gpt(implementation_prompt, model=opponent)
-            implementation_code = extract_code_from_response(implementation_response)
-            print(f"Extracted implementation code:\n{implementation_code}\n")
+            # Creator's attempt
+            print(f"\n---------- {creator} is implementing their own challenge ----------")
+            creator_implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
+            creator_implementation_response = send_prompt_to_gpt(creator_implementation_prompt, model=creator)
+            creator_implementation_code = extract_code_from_response(creator_implementation_response)
+            creator_success = run_tests(creator_implementation_code, visible_tests, hidden_tests)
             
-            print(f"Executing {opponent}'s implementation...")
-            exec(implementation_code, globals())
-
-            print("Running visible tests...")
-            try:
-                for test in visible_tests:
-                    exec(test)
-                print(f"{opponent} passed visible tests.")
-                print("Running hidden tests...")
-                try:
-                    for test in hidden_tests:
-                        exec(test)
-                    print(f"{opponent} passed hidden tests.")
-                    print(f"{opponent} succeeded in implementing the function.")
-                    scores[opponent] += 1
-                except AssertionError as e:
-                    print(f"{opponent} failed hidden tests.")
-                    print(f"AssertionError: {e}")
-                    scores[player] += 2
-            except AssertionError as e:
-                print(f"{opponent} failed visible tests.")
-                print(f"AssertionError: {e}")
-                scores[player] += 2
-
-            print("\nCleaning up global namespace...")
-            if 'X' in globals():
-                del globals()['X']
-            print("Cleanup complete.\n")
+            # Opponent's attempt
+            print(f"\n---------- {opponent} is trying to solve the challenge ----------")
+            opponent_implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
+            opponent_implementation_response = send_prompt_to_gpt(opponent_implementation_prompt, model=opponent)
+            opponent_implementation_code = extract_code_from_response(opponent_implementation_response)
+            opponent_success = run_tests(opponent_implementation_code, visible_tests, hidden_tests)
+            
+            # Scoring
+            if creator_success and not opponent_success:
+                scores[creator] += 2
+                print(f"{creator} gets +2 points, {opponent} gets 0 points")
+            elif not creator_success and opponent_success:
+                scores[creator] -= 2
+                scores[opponent] += 2
+                print(f"{creator} loses 2 points, {opponent} gets +2 points")
+            elif creator_success and opponent_success:
+                scores[opponent] += 1
+                print(f"{creator} gets 0 points, {opponent} gets +1 point")
+            else:  # both fail
+                scores[creator] -= 1
+                scores[opponent] -= 1
+                print(f"Both {creator} and {opponent} lose 1 point")
             
             print(f"Current scores: {scores}")
-
-            input()
+            
+            input("Press Enter to continue...")
         
     print("\n==================== Final Scores ====================")
     print(scores)
@@ -164,7 +187,7 @@ def test_X():
 [End of code]"""
 
 # Choose models and number of rounds
-model1 = "gpt-4-turbo"
+model1 = "gpt-4o"
 model2 = "gpt-4o"
 num_rounds = 5
 
