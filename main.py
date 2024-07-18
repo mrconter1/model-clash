@@ -29,10 +29,8 @@ def extract_code_from_response(response):
         return "No code found between [Start of final answer] and [End of final answer]"
 
 def clean_and_format_code(extracted_code):
-    # Split the code into lines
     code_lines = extracted_code.split('\n')
     
-    # Format assert statements
     formatted_lines = ['def test_X():']
     visible_tests_started = False
     for line in code_lines:
@@ -44,29 +42,53 @@ def clean_and_format_code(extracted_code):
         if visible_tests_started and 'assert' in line:
             line = line.strip()
             line = re.sub(r'assert\s+\w+', 'assert X', line)
-            # Remove trailing comments
             line = re.sub(r'\s*#.*$', '', line)
             formatted_lines.append(f'    {line}')
+
+    if len(formatted_lines) == 0:
+        print(extracted_code)
     
     return '\n'.join(formatted_lines)
+
+def create_opponent_prompt(formatted_code):
+    prompt = f"""Based on the following test cases, figure out what the function X does and implement it. Write your implementation between [Start of code] and [End of code] tags.
+
+Test cases:
+{formatted_code}
+
+Your task:
+1. Analyze the test cases carefully.
+2. Determine the purpose and behavior of function X.
+3. Implement function X to pass all the given test cases.
+4. Write your implementation between the [Start of code] and [End of code] tags.
+5. There are also hidden test cases that you will need to pass as well.
+
+Please provide your implementation below:
+
+[Start of code]
+# Your implementation of function X goes here
+[End of code]
+"""
+    return prompt
 
 def play_game(model1, model2, rounds):
     scores = {model1: 0, model2: 0}
     
     for round in range(1, rounds + 1):
-        print(f"\nRound {round}")
+        print(f"\n---------- Round {round} ----------")
         for player, opponent in [(model1, model2), (model2, model1)]:
-            print(f"\n{player} is creating the function:")
+            print(f"\n{player} is creating the challenge:")
             response = send_prompt_to_gpt(prompt, model=player)
             extracted_code = extract_code_from_response(response)
             formatted_code = clean_and_format_code(extracted_code)
-            print(formatted_code)
+            implementation_prompt = create_opponent_prompt(formatted_code)
+            print(implementation_prompt)
             
-            print(f"\n{opponent} is implementing the function:")
-            implementation_prompt = f"Implement the function X based on these test cases:\n\n{formatted_code}"
+            print(f"\n{opponent} is trying to implementing the function:")
             implementation = send_prompt_to_gpt(implementation_prompt, model=opponent)
             print(implementation)
             
+            input()
             # Here you would actually test the implementation
             # For simplicity, we'll randomly decide if it passes or fails
             import random
@@ -118,7 +140,7 @@ def test_X():
 [End of final answer]"""
 
 # Choose models and number of rounds
-model1 = "gpt-4-turbo"
+model1 = "gpt-4o"
 model2 = "gpt-4o"
 num_rounds = 5
 
