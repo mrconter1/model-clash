@@ -31,24 +31,28 @@ def extract_code_from_response(response):
 def clean_and_format_code(extracted_code):
     code_lines = extracted_code.split('\n')
     
-    formatted_lines = ['def test_X():']
-    visible_tests_started = False
+    visible_tests = []
+    hidden_tests = []
+    current_list = visible_tests
+    
     for line in code_lines:
         if '# Visible test cases' in line:
-            visible_tests_started = True
+            current_list = visible_tests
             continue
         if '# Hidden test cases' in line:
-            break
-        if visible_tests_started and 'assert' in line:
+            current_list = hidden_tests
+            continue
+        if 'assert' in line:
             line = line.strip()
             line = re.sub(r'assert\s+\w+', 'assert X', line)
             line = re.sub(r'\s*#.*$', '', line)
-            formatted_lines.append(f'    {line}')
+            current_list.append(line)
 
-    if len(formatted_lines) == 0:
+    if not visible_tests and not hidden_tests:
+        print("Warning: No test cases found in extracted code.")
         print(extracted_code)
     
-    return '\n'.join(formatted_lines)
+    return visible_tests, hidden_tests
 
 def create_opponent_prompt(formatted_code):
     prompt = f"""Based on the following test cases, figure out what the function X does and implement it. Write your implementation between [Start of code] and [End of code] tags.
@@ -78,39 +82,50 @@ def play_game(model1, model2, rounds):
     for round in range(1, rounds + 1):
         print(f"\n==================== Round {round} ====================")
         for player, opponent in [(model1, model2), (model2, model1)]:
-            print(f"\n---------- {player} is creating the challenge ----------")
+            print(f"\n---------- {player} is creating a challenge ----------")
             challenge_response = send_prompt_to_gpt(prompt, model=player)
             challenge_code = extract_code_from_response(challenge_response)
-            formatted_code = clean_and_format_code(challenge_code)
-            implementation_prompt = create_opponent_prompt(formatted_code)
+            visible_tests, hidden_tests = clean_and_format_code(challenge_code)
+            implementation_prompt = create_opponent_prompt('\n'.join(visible_tests))
             print(f"Prompt for {opponent}:\n{implementation_prompt}\n")
             
-            print(f"---------- {opponent} is trying to implement the function ----------")
+            print(f"---------- {opponent} is trying to solve the challange ----------")
             implementation_response = send_prompt_to_gpt(implementation_prompt, model=opponent)
             implementation_code = extract_code_from_response(implementation_response)
             print(f"Extracted implementation code:\n{implementation_code}\n")
             
-            # Here we need to create a new string of the code
-            # which is executable. We will simply test the opponents
             print(f"Executing {opponent}'s implementation...")
             exec(implementation_code, globals())
-            
-            print("Running tests...")
+
+            print("Running visible tests...")
             try:
-                test_X()  # Run the test function
-                print(f"{opponent} succeeded in implementing the function.")
-                scores[opponent] += 1
+                for test in visible_tests:
+                    exec(test)
+                print(f"{opponent} passed visible tests.")
+                print("Running hidden tests...")
+                try:
+                    for test in hidden_tests:
+                        exec(test)
+                    print(f"{opponent} passed hidden tests.")
+                    print(f"{opponent} succeeded in implementing the function.")
+                    scores[opponent] += 1
+                except AssertionError as e:
+                    print(f"{opponent} failed hidden tests.")
+                    print(f"AssertionError: {e}")
+                    scores[player] += 2
             except AssertionError as e:
-                print(f"{opponent} failed to implement the function correctly.")
+                print(f"{opponent} failed visible tests.")
                 print(f"AssertionError: {e}")
                 scores[player] += 2
-            
+
             print("\nCleaning up global namespace...")
-            del globals()['X']
-            del globals()['test_X']
+            if 'X' in globals():
+                del globals()['X']
             print("Cleanup complete.\n")
             
             print(f"Current scores: {scores}")
+
+            input()
         
     print("\n==================== Final Scores ====================")
     print(scores)
@@ -149,7 +164,7 @@ def test_X():
 [End of code]"""
 
 # Choose models and number of rounds
-model1 = "gpt-4o"
+model1 = "gpt-4-turbo"
 model2 = "gpt-4o"
 num_rounds = 5
 
