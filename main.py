@@ -21,12 +21,12 @@ def send_prompt_to_gpt(prompt, model="gpt-3.5-turbo"):
         return f"An error occurred: {str(e)}"
 
 def extract_code_from_response(response):
-    pattern = r'\[Start of final answer\](.*?)\[End of final answer\]'
+    pattern = r'\[Start of code\](.*?)\[End of code\]'
     match = re.search(pattern, response, re.DOTALL)
     if match:
         return match.group(1).strip()
     else:
-        return "No code found between [Start of final answer] and [End of final answer]"
+        return "No code found between [Start of code] and [End of code]"
 
 def clean_and_format_code(extracted_code):
     code_lines = extracted_code.split('\n')
@@ -76,35 +76,43 @@ def play_game(model1, model2, rounds):
     scores = {model1: 0, model2: 0}
     
     for round in range(1, rounds + 1):
-        print(f"\n---------- Round {round} ----------")
+        print(f"\n==================== Round {round} ====================")
         for player, opponent in [(model1, model2), (model2, model1)]:
-            print(f"\n{player} is creating the challenge:")
-            response = send_prompt_to_gpt(prompt, model=player)
-            extracted_code = extract_code_from_response(response)
-            formatted_code = clean_and_format_code(extracted_code)
+            print(f"\n---------- {player} is creating the challenge ----------")
+            challenge_response = send_prompt_to_gpt(prompt, model=player)
+            challenge_code = extract_code_from_response(challenge_response)
+            formatted_code = clean_and_format_code(challenge_code)
             implementation_prompt = create_opponent_prompt(formatted_code)
-            print(implementation_prompt)
+            print(f"Prompt for {opponent}:\n{implementation_prompt}\n")
             
-            print(f"\n{opponent} is trying to implementing the function:")
-            implementation = send_prompt_to_gpt(implementation_prompt, model=opponent)
-            print(implementation)
+            print(f"---------- {opponent} is trying to implement the function ----------")
+            implementation_response = send_prompt_to_gpt(implementation_prompt, model=opponent)
+            implementation_code = extract_code_from_response(implementation_response)
+            print(f"Extracted implementation code:\n{implementation_code}\n")
             
-            input()
-            # Here you would actually test the implementation
-            # For simplicity, we'll randomly decide if it passes or fails
-            import random
-            passes = random.choice([True, False])
+            # Here we need to create a new string of the code
+            # which is executable. We will simply test the opponents
+            print(f"Executing {opponent}'s implementation...")
+            exec(implementation_code, globals())
             
-            if passes:
+            print("Running tests...")
+            try:
+                test_X()  # Run the test function
                 print(f"{opponent} succeeded in implementing the function.")
                 scores[opponent] += 1
-            else:
+            except AssertionError as e:
                 print(f"{opponent} failed to implement the function correctly.")
+                print(f"AssertionError: {e}")
                 scores[player] += 2
+            
+            print("\nCleaning up global namespace...")
+            del globals()['X']
+            del globals()['test_X']
+            print("Cleanup complete.\n")
+            
+            print(f"Current scores: {scores}")
         
-        print(f"\nCurrent scores: {scores}")
-    
-    print("\nFinal scores:")
+    print("\n==================== Final Scores ====================")
     print(scores)
     winner = max(scores, key=scores.get)
     print(f"The winner is: {winner}")
@@ -127,7 +135,7 @@ Design a function X of ANY type and write unit tests for it. You will play multi
 3. Ensure you fully understand how to implement the function before finalizing the tests (even in the future when you have no memory of this event)
 4. Create enough test cases to make it possible to infer the function X. Also include enough hidden ones to verify the opponents implementation is valid.
 **Expected (exact) format:**
-[Start of final answer]
+[Start of code]
 def test_X():
     # Visible test cases
     assert X(inputX) == expected_outputX
@@ -138,7 +146,7 @@ def test_X():
     assert X(inputX) == expected_outputX
     assert X(inputX) == expected_outputX
     # ... more invisible test cases
-[End of final answer]"""
+[End of code]"""
 
 # Choose models and number of rounds
 model1 = "gpt-4o"
