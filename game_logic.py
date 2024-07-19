@@ -2,13 +2,47 @@ from models import send_prompt_to_model
 from utils import extract_test_cases, run_tests, extract_code_from_response
 from prompts import create_implementation_prompt, create_challenge_prompt
 
+import re
+import textwrap
+
+def extract_test_cases(challenge_response):
+    # Split the response into visible and hidden sections
+    sections = re.split(r'#\s*Hidden test cases', challenge_response)
+    
+    def process_section(section):
+        assert_lines = re.findall(r'^\s*assert.*$', section, re.MULTILINE)
+        return [re.sub(r'assert\s+\w+', 'assert X', line.split('#')[0].strip()) for line in assert_lines]
+    
+    visible_tests = process_section(sections[0])
+    hidden_tests = process_section(sections[1]) if len(sections) > 1 else []
+    
+    return visible_tests, hidden_tests
+
+def format_test_cases(visible_tests, hidden_tests):
+    formatted = "# Visible test cases\n"
+    formatted += '\n'.join(visible_tests)
+    formatted += "\n"  # Add an empty line after visible test cases
+    if hidden_tests:
+        formatted += "\n# Hidden test cases\n"  # Add an empty line before hidden test cases
+        formatted += '\n'.join(hidden_tests)
+    return formatted
+
 def run_game(model1, model2, rounds, challenge_prompt):
     scores = {model1["name"]: 0, model2["name"]: 0}
     
-    for _ in range(rounds):
+    print(f"\nGame: {model1['name']} vs {model2['name']} ({rounds} rounds)")
+    
+    for round_num in range(1, rounds + 1):
+        print(f"\nRound {round_num}:")
         for creator, opponent in [(model1, model2), (model2, model1)]:
+            print(f"\n  {creator['name']} challenge:")
             challenge_response = send_prompt_to_model(challenge_prompt, creator)
+            
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
+            formatted_test = format_test_cases(visible_tests, hidden_tests)
+            
+            print(textwrap.indent(formatted_test, '    '))
+            print()  # Add an empty line after the challenge
             
             implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
             creator_implementation = send_prompt_to_model(implementation_prompt, creator)
@@ -18,9 +52,13 @@ def run_game(model1, model2, rounds, challenge_prompt):
             opponent_success = run_tests(extract_code_from_response(opponent_implementation), visible_tests, hidden_tests)
             
             update_scores(scores, creator, opponent, creator_success, opponent_success)
+            
+            print(f"  Results: {creator['name']}: {'✓' if creator_success else '✗'}, {opponent['name']}: {'✓' if opponent_success else '✗'}")
+            print(f"  Scores: {model1['name']}: {scores[model1['name']]}, {model2['name']}: {scores[model2['name']]}")
 
-    total_games = rounds * 2
-    ratio = scores[model1["name"]] / total_games
+    print(f"\nFinal Scores: {model1['name']}: {scores[model1['name']]}, {model2['name']}: {scores[model2['name']]}")
+    
+    ratio = scores[model1["name"]] / scores[model2["name"]] if scores[model2["name"]] != 0 else float('inf')
     return ratio
 
 def update_scores(scores, creator, opponent, creator_success, opponent_success):
@@ -38,33 +76,50 @@ def run_tournament(list_of_model_dicts, num_of_rounds):
     num_models = len(list_of_model_dicts)
     results_table = [[0 for _ in range(num_models)] for _ in range(num_models)]
 
+    total_games = num_models * (num_models + 1) // 2  # Including diagonal
+    games_played = 0
+
+    print(f"\nStarting tournament with {num_models} models and {num_of_rounds} rounds per game.")
+    print(f"Total number of games to be played: {total_games}")
+
     for i in range(num_models):
-        for j in range(i, num_models):  # Only diagonal and upper triangle
+        for j in range(i, num_models):  # Including diagonal and upper triangle
             model1 = list_of_model_dicts[i]
             model2 = list_of_model_dicts[j]
+            games_played += 1
+            print(f"\nGame {games_played}/{total_games}: {model1['name']} vs {model2['name']}")
             ratio = run_game(model1, model2, num_of_rounds, challenge_prompt)
             results_table[i][j] = ratio
+            if i != j:  # Only fill lower triangle if it's not a diagonal element
+                results_table[j][i] = 1 / ratio if ratio != 0 else float('inf')
+
+            print("\nCurrent Results Table:")
+            print_results_table(list_of_model_dicts, results_table)
 
     return results_table
 
 def print_results_table(list_of_model_dicts, results_table):
     model_names = [model["name"] for model in list_of_model_dicts]
     
-    # Calculate max model name length for alignment
     max_name_length = max(len(name) for name in model_names)
     
-    # Print header
     header = "Model".ljust(max_name_length + 4)
     for name in model_names:
         header += f"{name:>12}"
     print(header)
     
-    # Print data rows
     for i, row in enumerate(results_table):
         print(f"{model_names[i]:<{max_name_length + 4}}", end="")
         for j, value in enumerate(row):
-            if i <= j:
-                print(f"{value:12.2f}", end="")
-            else:
+            if i == j:
                 print(f"{'-':>12}", end="")
-        print()  # New line after each row
+            elif i > j:
+                print(f"{'-':>12}", end="")
+            else:
+                if value == float('inf'):
+                    print(f"{'inf':>12}", end="")
+                elif value == 0:
+                    print(f"{'-':>12}", end="")
+                else:
+                    print(f"{value:12.2f}", end="")
+        print()
