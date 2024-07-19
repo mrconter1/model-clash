@@ -8,29 +8,16 @@ def extract_code_from_response(response):
     else:
         return "No code found between [Start of code] and [End of code]"
 
-def extract_test_cases(extracted_code):
-    code_lines = extracted_code.split('\n')
+def extract_test_cases(challenge_response):
+    # Split the response into visible and hidden sections
+    sections = re.split(r'#\s*Hidden test cases', challenge_response)
     
-    visible_tests = []
-    hidden_tests = []
-    current_list = visible_tests
+    def process_section(section):
+        assert_lines = re.findall(r'^\s*assert.*$', section, re.MULTILINE)
+        return [re.sub(r'assert\s+\w+', 'assert X', line.split('#')[0].strip()) for line in assert_lines]
     
-    for line in code_lines:
-        if '# Visible test cases' in line:
-            current_list = visible_tests
-            continue
-        if '# Hidden test cases' in line:
-            current_list = hidden_tests
-            continue
-        if 'assert' in line:
-            line = line.strip()
-            line = re.sub(r'assert\s+\w+', 'assert X', line)
-            line = re.sub(r'\s*#.*$', '', line)
-            current_list.append(line)
-
-    if not visible_tests and not hidden_tests:
-        print("Warning: No test cases found in extracted code.")
-        print(extracted_code)
+    visible_tests = process_section(sections[0])
+    hidden_tests = process_section(sections[1]) if len(sections) > 1 else []
     
     return visible_tests, hidden_tests
 

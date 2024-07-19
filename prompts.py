@@ -10,6 +10,7 @@ Design a function X of ANY type and write unit tests for it. You will play multi
 2. Provide a thorough explanation of how X works before implementation.
 3. Ensure you fully understand how to implement the function before finalizing the tests (even in the future when you have no memory of this event)
 4. Create enough test cases to make it possible to infer the function X. Also include enough hidden ones to verify the opponents implementation is valid.
+5. Rembember that there cannot be any hint in the form of a function name or trailing comments
 **Expected (exact) format:**
 [Start of code]
 def test_X():
