@@ -5,6 +5,7 @@ def main():
         {"name": "gpt-4o", "provider": "openai"},
         {"name": "gpt-4o-mini", "provider": "openai"},
         {"name": "gpt-3.5-turbo", "provider": "openai"},
+        # {"name": "claude-3.5-sonnet", "provider": "anthropic"},
         # Add more models as needed
     ]
 
