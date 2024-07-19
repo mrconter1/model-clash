@@ -1,22 +1,46 @@
 import os
 import re
-from openai import OpenAI
+import asyncio
+from openai import AsyncOpenAI
+import google.generativeai as genai
+import anthropic
 
-# Initialize the OpenAI client
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
+# OpenAI setup
+openai_api_key = os.getenv('OPENAI_API_KEY')
+openai_client = AsyncOpenAI(api_key=openai_api_key)
 
-def send_prompt_to_gpt(prompt, model="gpt-3.5-turbo"):
+# Google setup
+google_api_key = os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=google_api_key)
+
+# Anthropic setup
+anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
+anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+
+async def send_prompt_to_model(prompt, model):
     try:
-        chat_completion = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return chat_completion.choices[0].message.content
+        if model["provider"] == "openai":
+            chat_completion = await openai_client.chat.completions.create(
+                model=model["name"],
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            return chat_completion.choices[0].message.content
+        elif model["provider"] == "google":
+            google_model = genai.GenerativeModel(model["name"])
+            response = google_model.generate_content(prompt)
+            return response.text
+        elif model["provider"] == "anthropic":
+            response = anthropic_client.messages.create(
+                model=model["name"],
+                max_tokens=4000,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            return response.content[0].text
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
@@ -93,30 +117,33 @@ def run_tests(implementation_code, visible_tests, hidden_tests):
     
     return True
 
-def play_game(model1, model2, rounds):
-    scores = {model1: 0, model2: 0}
+async def play_game(model1, model2, rounds):
+    scores = {model1["name"]: 0, model2["name"]: 0}
     
     for round in range(1, rounds + 1):
         print(f"\nRound {round}")
         for creator, opponent in [(model1, model2), (model2, model1)]:
-            print(f"{creator} challenge:")
-            challenge_response = send_prompt_to_gpt(prompt, model=creator)
+            print(f"{creator['name']} challenge:")
+            challenge_response = await send_prompt_to_model(prompt, creator)
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             
-            creator_success = run_tests(extract_code_from_response(send_prompt_to_gpt(create_implementation_prompt('\n'.join(visible_tests)), model=creator)), visible_tests, hidden_tests)
-            opponent_success = run_tests(extract_code_from_response(send_prompt_to_gpt(create_implementation_prompt('\n'.join(visible_tests)), model=opponent)), visible_tests, hidden_tests)
+            creator_implementation = await send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), creator)
+            opponent_implementation = await send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), opponent)
+            
+            creator_success = run_tests(extract_code_from_response(creator_implementation), visible_tests, hidden_tests)
+            opponent_success = run_tests(extract_code_from_response(opponent_implementation), visible_tests, hidden_tests)
             
             if creator_success and not opponent_success:
-                scores[creator] += 3
-                print(f"  {creator}: +3, {opponent}: 0")
+                scores[creator["name"]] += 3
+                print(f"  {creator['name']}: +3, {opponent['name']}: 0")
             elif creator_success and opponent_success:
-                scores[creator] += 1
-                scores[opponent] += 2
-                print(f"  {creator}: +1, {opponent}: +2")
+                scores[creator["name"]] += 1
+                scores[opponent["name"]] += 2
+                print(f"  {creator['name']}: +1, {opponent['name']}: +2")
             elif not creator_success and opponent_success:
-                scores[creator] -= 1
-                scores[opponent] += 3
-                print(f"  {creator}: -1, {opponent}: +3")
+                scores[creator["name"]] -= 1
+                scores[opponent["name"]] += 3
+                print(f"  {creator['name']}: -1, {opponent['name']}: +3")
             else:
                 print(f"  Both: 0")
         
@@ -153,10 +180,12 @@ def test_X():
     # ... more invisible test cases
 [End of code]"""
 
-# Choose models and number of rounds
-model1 = "gpt-3.5-turbo"
-model2 = "gpt-4"
+# Define models
+model1 = {"name": "gpt-4o", "provider": "openai"}
+model2 = {"name": "gpt-4o-mini", "provider": "openai"}
+
+# Number of rounds
 num_rounds = 25
 
-# Play the game
-play_game(model1, model2, num_rounds)
+# Run the game
+asyncio.run(play_game(model1, model2, num_rounds))
