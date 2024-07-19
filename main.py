@@ -1,13 +1,12 @@
 import os
 import re
-import asyncio
-from openai import AsyncOpenAI
+from openai import OpenAI
 import google.generativeai as genai
 import anthropic
 
 # OpenAI setup
 openai_api_key = os.getenv('OPENAI_API_KEY')
-openai_client = AsyncOpenAI(api_key=openai_api_key)
+openai_client = OpenAI(api_key=openai_api_key)
 
 # Google setup
 google_api_key = os.getenv('GOOGLE_API_KEY')
@@ -17,10 +16,10 @@ genai.configure(api_key=google_api_key)
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
 
-async def send_prompt_to_model(prompt, model):
+def send_prompt_to_model(prompt, model):
     try:
         if model["provider"] == "openai":
-            chat_completion = await openai_client.chat.completions.create(
+            chat_completion = openai_client.chat.completions.create(
                 model=model["name"],
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -117,18 +116,18 @@ def run_tests(implementation_code, visible_tests, hidden_tests):
     
     return True
 
-async def play_game(model1, model2, rounds):
+def play_game(model1, model2, rounds):
     scores = {model1["name"]: 0, model2["name"]: 0}
     
     for round in range(1, rounds + 1):
         print(f"\nRound {round}")
         for creator, opponent in [(model1, model2), (model2, model1)]:
             print(f"{creator['name']} challenge:")
-            challenge_response = await send_prompt_to_model(prompt, creator)
+            challenge_response = send_prompt_to_model(prompt, creator)
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             
-            creator_implementation = await send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), creator)
-            opponent_implementation = await send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), opponent)
+            creator_implementation = send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), creator)
+            opponent_implementation = send_prompt_to_model(create_implementation_prompt('\n'.join(visible_tests)), opponent)
             
             creator_success = run_tests(extract_code_from_response(creator_implementation), visible_tests, hidden_tests)
             opponent_success = run_tests(extract_code_from_response(opponent_implementation), visible_tests, hidden_tests)
@@ -185,7 +184,7 @@ model1 = {"name": "gpt-4o", "provider": "openai"}
 model2 = {"name": "gpt-4o-mini", "provider": "openai"}
 
 # Number of rounds
-num_rounds = 25
+num_rounds = 100
 
 # Run the game
-asyncio.run(play_game(model1, model2, num_rounds))
+play_game(model1, model2, num_rounds)
