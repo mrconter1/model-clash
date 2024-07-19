@@ -14,9 +14,11 @@ def format_test_cases(visible_tests, hidden_tests):
     return formatted
 
 def run_game(model1, model2, rounds, challenge_prompt, game_number, total_games):
+
     model1_id = f"{model1['name']}_1"
     model2_id = f"{model2['name']}_2"
-    scores = {model1_id: 0, model2_id: 0}
+    initial_score = 1  # To reduce risk of inf ratio
+    scores = {model1_id: initial_score, model2_id: initial_score}
     
     for round_num in range(1, rounds + 1):
         print(f"\nGame {game_number} of {total_games}")
