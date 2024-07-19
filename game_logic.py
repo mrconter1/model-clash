@@ -13,15 +13,16 @@ def format_test_cases(visible_tests, hidden_tests):
         formatted += '\n'.join(hidden_tests)
     return formatted
 
-def run_game(model1, model2, rounds, challenge_prompt):
+def run_game(model1, model2, rounds, challenge_prompt, game_number, total_games):
     model1_id = f"{model1['name']}_1"
     model2_id = f"{model2['name']}_2"
     scores = {model1_id: 0, model2_id: 0}
     
-    print(f"\nGame: {model1['name']} vs {model2['name']} ({rounds} rounds)")
-    
     for round_num in range(1, rounds + 1):
-        print(f"\nRound {round_num}:")
+        print(f"\nGame {game_number} of {total_games}")
+        print(f"Opponents: {model1['name']} vs {model2['name']}")
+        print(f"Round {round_num} of {rounds}:")
+        
         for creator, opponent in [(model1, model2), (model2, model1)]:
             creator_id = model1_id if creator == model1 else model2_id
             opponent_id = model2_id if opponent == model2 else model1_id
@@ -32,7 +33,6 @@ def run_game(model1, model2, rounds, challenge_prompt):
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             formatted_test = format_test_cases(visible_tests, hidden_tests)
             
-            print()
             print(textwrap.indent(formatted_test, '    '))
             print()  # Add an empty line after the challenge
             
@@ -68,22 +68,20 @@ def run_tournament(list_of_model_dicts, num_of_rounds):
     num_models = len(list_of_model_dicts)
     results_table = [[0 for _ in range(num_models)] for _ in range(num_models)]
 
-    total_games = num_models * (num_models + 1) // 2  # Including diagonal
-    games_played = 0
+    total_games = num_models * (num_models - 1) // 2  # Excluding diagonal
+    game_count = 0
 
     print(f"\nStarting tournament with {num_models} models and {num_of_rounds} rounds per game.")
     print(f"Total number of games to be played: {total_games}")
 
     for i in range(num_models):
-        for j in range(i, num_models):  # Including diagonal and upper triangle
+        for j in range(i+1, num_models):  # Excluding diagonal
             model1 = list_of_model_dicts[i]
             model2 = list_of_model_dicts[j]
-            games_played += 1
-            print(f"\nGame {games_played}/{total_games}: {model1['name']} vs {model2['name']}")
-            ratio = run_game(model1, model2, num_of_rounds, challenge_prompt)
+            game_count += 1
+            ratio = run_game(model1, model2, num_of_rounds, challenge_prompt, game_count, total_games)
             results_table[i][j] = ratio
-            if i != j:  # Only fill lower triangle if it's not a diagonal element
-                results_table[j][i] = 1 / ratio if ratio != 0 else float('inf')
+            results_table[j][i] = 1 / ratio if ratio != 0 else float('inf')
 
             print("\nCurrent Results Table:")
             print_results_table(list_of_model_dicts, results_table)
