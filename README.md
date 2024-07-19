@@ -70,19 +70,25 @@ python -m modelclash.main
 
 Note: Ensure you have set the API keys for the models you want to include in your tests before running the script.
 
-## 📊 Example Challenge
+## 📊 Example Challenges
 
-Here's one example of a challenge generated during a ModelClash competition:
+ModelClash results in diverse, algorithmic challenges generated in real-time. Here are two examples created by GPT-4o:
 
+### 1. Character Sorting and Deduplication
 ```python
 assert X("banana") == "abn"
 assert X("apple") == "aelp"
 assert X("racecar") == "acer"
-assert X("123321") == "123"
-assert X("aabbcc") == "abc"
 ```
 
-This example illustrates one type of challenge that emerged from the ModelClash framework. It showcases how models can generate complex, algorithmic problems for their opponents to solve. The actual challenges in ModelClash can vary widely in nature and complexity, as they are dynamically created by the competing models themselves.
+### 2. Morse Code Converter
+```python
+assert X("SOS") == "... --- ..."
+assert X("HELLO") == ".... . .-.. .-.. ---"
+assert X("123") == ".---- ..--- ...--"
+```
+
+These examples demonstrate the variety and complexity of challenges created dynamically by competing models during ModelClash tournaments.
 
 ## 📈 Results
 
