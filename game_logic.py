@@ -20,8 +20,8 @@ def run_game(model1, model2, rounds, challenge_prompt, game_number, total_games)
     
     for round_num in range(1, rounds + 1):
         print(f"\nGame {game_number} of {total_games}")
+        print(f"Round {round_num} of {rounds}")
         print(f"Opponents: {model1['name']} vs {model2['name']}")
-        print(f"Round {round_num} of {rounds}:")
         
         for creator, opponent in [(model1, model2), (model2, model1)]:
             creator_id = model1_id if creator == model1 else model2_id
@@ -33,15 +33,16 @@ def run_game(model1, model2, rounds, challenge_prompt, game_number, total_games)
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             formatted_test = format_test_cases(visible_tests, hidden_tests)
             
+            print()
             print(textwrap.indent(formatted_test, '    '))
             print()  # Add an empty line after the challenge
             
             implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
-            creator_implementation = send_prompt_to_model(implementation_prompt, creator)
-            opponent_implementation = send_prompt_to_model(implementation_prompt, opponent)
-            
-            creator_success = run_tests(extract_code_from_response(creator_implementation), visible_tests, hidden_tests)
-            opponent_success = run_tests(extract_code_from_response(opponent_implementation), visible_tests, hidden_tests)
+            creator_implementation = extract_code_from_response(send_prompt_to_model(implementation_prompt, creator))
+            opponent_implementation = extract_code_from_response(send_prompt_to_model(implementation_prompt, opponent))
+
+            creator_success = run_tests(creator_implementation, visible_tests, hidden_tests)
+            opponent_success = run_tests(opponent_implementation, visible_tests, hidden_tests)
             
             update_scores(scores, creator_id, opponent_id, creator_success, opponent_success)
             
@@ -66,22 +67,21 @@ def update_scores(scores, creator_id, opponent_id, creator_success, opponent_suc
 def run_tournament(list_of_model_dicts, num_of_rounds):
     challenge_prompt = create_challenge_prompt()
     num_models = len(list_of_model_dicts)
-    results_table = [[0 for _ in range(num_models)] for _ in range(num_models)]
+    results_table = [["-" for _ in range(num_models)] for _ in range(num_models)]
 
-    total_games = num_models * (num_models - 1) // 2  # Excluding diagonal
+    total_games = num_models * (num_models + 1) // 2  # Including diagonal and upper triangle
     game_count = 0
 
     print(f"\nStarting tournament with {num_models} models and {num_of_rounds} rounds per game.")
     print(f"Total number of games to be played: {total_games}")
 
     for i in range(num_models):
-        for j in range(i+1, num_models):  # Excluding diagonal
+        for j in range(i, num_models):  # Including diagonal and upper triangle
             model1 = list_of_model_dicts[i]
             model2 = list_of_model_dicts[j]
             game_count += 1
             ratio = run_game(model1, model2, num_of_rounds, challenge_prompt, game_count, total_games)
             results_table[i][j] = ratio
-            results_table[j][i] = 1 / ratio if ratio != 0 else float('inf')
 
             print("\nCurrent Results Table:")
             print_results_table(list_of_model_dicts, results_table)
@@ -101,15 +101,10 @@ def print_results_table(list_of_model_dicts, results_table):
     for i, row in enumerate(results_table):
         print(f"{model_names[i]:<{max_name_length + 4}}", end="")
         for j, value in enumerate(row):
-            if i == j:
+            if value == "-":
                 print(f"{'-':>12}", end="")
-            elif i > j:
-                print(f"{'-':>12}", end="")
+            elif value == float('inf'):
+                print(f"{'inf':>12}", end="")
             else:
-                if value == float('inf'):
-                    print(f"{'inf':>12}", end="")
-                elif value == 0:
-                    print(f"{'-':>12}", end="")
-                else:
-                    print(f"{value:12.2f}", end="")
+                print(f"{value:12.2f}", end="")
         print()
