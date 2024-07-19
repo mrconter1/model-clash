@@ -3,10 +3,10 @@ from model import Model
 
 def main():
     models = [
+        Model("claude-3-5-sonnet-20240620", "anthropic"),
         Model("gpt-4o", "openai"),
         Model("gpt-4o-mini", "openai"),
         Model("gpt-3.5-turbo", "openai"),
-        # Model("claude-3.5-sonnet", "anthropic"),
         # Add more models as needed
     ]
 

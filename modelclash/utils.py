@@ -13,9 +13,11 @@ def extract_test_cases(challenge_response):
     sections = re.split(r'#\s*Hidden test cases', challenge_response)
     
     def process_section(section):
+        # Find all assert lines
         assert_lines = re.findall(r'^\s*assert.*$', section, re.MULTILINE)
-        return [re.sub(r'assert\s+\w+', 'assert X', line.split('#')[0].strip()) for line in assert_lines]
+        return [line.strip() for line in assert_lines]
     
+    # Process visible and hidden test cases
     visible_tests = process_section(sections[0])
     hidden_tests = process_section(sections[1]) if len(sections) > 1 else []
     
