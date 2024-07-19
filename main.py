@@ -8,7 +8,7 @@ def main():
         # Add more models as needed
     ]
 
-    num_rounds = 1
+    num_rounds = 3
     results = run_tournament(models, num_rounds)
     print_results_table(models, results)
 

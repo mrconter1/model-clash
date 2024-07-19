@@ -39,24 +39,32 @@ def run_tournament(list_of_model_dicts, num_of_rounds):
     results_table = [[0 for _ in range(num_models)] for _ in range(num_models)]
 
     for i in range(num_models):
-        for j in range(i + 1, num_models):
+        for j in range(i, num_models):  # Only diagonal and upper triangle
             model1 = list_of_model_dicts[i]
             model2 = list_of_model_dicts[j]
             ratio = run_game(model1, model2, num_of_rounds, challenge_prompt)
             results_table[i][j] = ratio
-            results_table[j][i] = 1 - ratio
 
     return results_table
 
 def print_results_table(list_of_model_dicts, results_table):
     model_names = [model["name"] for model in list_of_model_dicts]
     
+    # Calculate max model name length for alignment
+    max_name_length = max(len(name) for name in model_names)
+    
     # Print header
-    print("Model\t" + "\t".join(model_names))
+    header = "Model".ljust(max_name_length + 4)
+    for name in model_names:
+        header += f"{name:>12}"
+    print(header)
     
     # Print data rows
     for i, row in enumerate(results_table):
-        print(f"{model_names[i]}", end="")
-        for value in row:
-            print(f"\t{value:.2f}", end="")
+        print(f"{model_names[i]:<{max_name_length + 4}}", end="")
+        for j, value in enumerate(row):
+            if i <= j:
+                print(f"{value:12.2f}", end="")
+            else:
+                print(f"{'-':>12}", end="")
         print()  # New line after each row
