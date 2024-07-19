@@ -1,7 +1,8 @@
-import os
-from openai import OpenAI
 import google.generativeai as genai
 import anthropic
+import os
+
+from openai import OpenAI
 
 # OpenAI setup
 openai_api_key = os.getenv('OPENAI_API_KEY')
