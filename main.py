@@ -1,16 +1,16 @@
-from game_logic import play_game
-from prompts import create_challenge_prompt
-
-# Define models
-MODEL1 = {"name": "gpt-4o", "provider": "openai"}
-MODEL2 = {"name": "gpt-4o-mini", "provider": "openai"}
-
-# Number of rounds
-NUM_ROUNDS = 100
+from game_logic import run_tournament, print_results_table
 
 def main():
-    challenge_prompt = create_challenge_prompt()
-    play_game(MODEL1, MODEL2, NUM_ROUNDS, challenge_prompt)
+    models = [
+        {"name": "gpt-4o", "provider": "openai"},
+        {"name": "gpt-4o-mini", "provider": "openai"},
+        {"name": "gpt-3.5-turbo", "provider": "openai"},
+        # Add more models as needed
+    ]
+
+    num_rounds = 1
+    results = run_tournament(models, num_rounds)
+    print_results_table(models, results)
 
 if __name__ == "__main__":
     main()
