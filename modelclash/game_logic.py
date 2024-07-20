@@ -3,11 +3,11 @@ from prompts import create_implementation_prompt, create_challenge_prompt
 from model_handler import send_prompt_to_model
 from tabulate import tabulate
 import asyncio
+import logging
 
 class TournamentState:
     def __init__(self, num_models, total_rounds):
-        self.results_table = [[1.0 for _ in range(num_models)] for _ in range(num_models)]
-        self.score_table = [[[0, 0] for _ in range(num_models)] for _ in range(num_models)]
+        self.score_table = [[[1, 1] for _ in range(num_models)] for _ in range(num_models)]
         self.total_rounds = total_rounds
         self.current_round = 0
         self.lock = asyncio.Lock()
@@ -17,9 +17,6 @@ class TournamentState:
 
     async def update_tables(self, i, j, ratio, score1, score2):
         async with self.lock:
-            self.results_table[i][j] = ratio
-            if i != j:
-                self.results_table[j][i] = 1 / ratio
             self.score_table[i][j] = [score1, score2]
             if i != j:
                 self.score_table[j][i] = [score2, score1]
@@ -32,7 +29,7 @@ class TournamentState:
             await self.print_results_table()
 
     async def print_results_table(self):
-        await asyncio.to_thread(print_results_table, self.models, self.results_table, self.score_table, self.rounds_played, self.current_round, self.total_rounds)
+        await asyncio.to_thread(print_results_table, self.models, self.score_table, self.rounds_played, self.current_round, self.total_rounds)
 
 async def run_tournament(models, rounds_per_pair):
     challenge_prompt = create_challenge_prompt()
@@ -52,7 +49,6 @@ async def run_tournament(models, rounds_per_pair):
             tasks.append(task)
 
     await asyncio.gather(*tasks)
-    return state.results_table, state.score_table
 
 async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
     model1_id = f"{model1.name}_1"
@@ -64,17 +60,30 @@ async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
             creator_id = model1_id if creator == model1 else model2_id
             opponent_id = model2_id if opponent == model2 else model1_id
             
-            challenge_response = await send_prompt_to_model(challenge_prompt, creator)
-            visible_tests, hidden_tests = extract_test_cases(challenge_response)
-            
-            implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
-            creator_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, creator))
-            opponent_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, opponent))
+            try:
+                challenge_response = await send_prompt_to_model(challenge_prompt, creator)
+                logging.info(f"Challenge response from {creator.name}: {challenge_response[:250]}...")
+                
+                visible_tests, hidden_tests = extract_test_cases(challenge_response)
+                if not visible_tests or not hidden_tests:
+                    logging.error(f"Failed to extract test cases for {creator.name}")
+                    continue
+                
+                implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
+                creator_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, creator))
+                opponent_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, opponent))
+                
+                logging.info(f"Creator ({creator.name}) implementation: {creator_implementation[:100]}...")
+                logging.info(f"Opponent ({opponent.name}) implementation: {opponent_implementation[:100]}...")
 
-            creator_success = run_tests(creator_implementation, visible_tests, hidden_tests)
-            opponent_success = run_tests(opponent_implementation, visible_tests, hidden_tests)
-            
-            update_scores(scores, creator_id, opponent_id, creator_success, opponent_success)
+                creator_success = run_tests(creator_implementation, visible_tests, hidden_tests)
+                opponent_success = run_tests(opponent_implementation, visible_tests, hidden_tests)
+                
+                logging.info(f"Creator success: {creator_success}, Opponent success: {opponent_success}")
+                
+                update_scores(scores, creator_id, opponent_id, creator_success, opponent_success)
+            except Exception as e:
+                logging.error(f"Error in round {round_num} for {creator.name} vs {opponent.name}: {str(e)}")
 
         ratio = scores[model1_id] / scores[model2_id] if scores[model2_id] != 0 else float('inf')
         await state.update_tables(i, j, ratio, scores[model1_id], scores[model2_id])
@@ -96,7 +105,7 @@ def calculate_ratio(score_a, score_b):
     adjusted_b = score_b + offset
     return adjusted_a / adjusted_b
 
-def print_results_table(models, results_table, score_table, rounds_played, current_round, total_rounds):
+def print_results_table(models, score_table, rounds_played, current_round, total_rounds):
     model_names = [model.name for model in models]
     
     table_data = []

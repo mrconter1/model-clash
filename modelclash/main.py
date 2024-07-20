@@ -16,8 +16,7 @@ async def main():
     ]
 
     num_rounds = 100
-    results = await run_tournament(models, num_rounds)
-    print_results_table(models, results)
+    await run_tournament(models, num_rounds)
 
 if __name__ == "__main__":
     asyncio.run(main())
