@@ -96,17 +96,16 @@ def print_results_table(models, results_table, score_table, current_round, total
     model_names = [model.name for model in models]
     
     table_data = []
-    for i, row in enumerate(results_table):
-        table_row = [model_names[i]]
-        for j in range(len(row)):
-            if i == j:
-                table_row.append(f"{1.00:.2f}")
-            else:
-                score_i, score_j = score_table[i][j][0], score_table[i][j][1]
-                ratio = calculate_ratio(score_i, score_j)
-                table_row.append(f"{ratio:.2f}")
-        table_data.append(table_row)
+    for i in range(len(models)):
+        for j in range(i, len(models)):  # Changed this line
+            score_i, score_j = score_table[i][j][0], score_table[i][j][1]
+            table_data.append([
+                model_names[i],
+                model_names[j],
+                score_i,
+                score_j
+            ])
     
-    headers = ["Model"] + model_names
+    headers = ["Player A", "Player B", "A's Score", "B's Score"]
     print(f"\nRound {current_round}/{total_rounds}")
-    print(tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".2f"))
+    print(tabulate(table_data, headers=headers, tablefmt="grid"))
