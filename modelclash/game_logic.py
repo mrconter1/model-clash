@@ -38,7 +38,7 @@ async def run_tournament(models, rounds_per_pair):
     state = TournamentState(num_models, total_rounds)
     state.models = models
 
-    print(f"Starting tournament with {num_models} models, {rounds_per_pair} rounds per pair, total {total_rounds} rounds")
+    logging.info(f"Starting tournament with {num_models} models, {rounds_per_pair} rounds per pair, total {total_rounds} rounds")
 
     tasks = []
     for i in range(num_models):
@@ -125,5 +125,8 @@ def print_results_table(models, score_table, rounds_played, current_round, total
             ])
     
     headers = ["Player A", "Player B", "A's Score", "B's Score", "Rounds Played"]
+
     print(f"\nRound {current_round}/{total_rounds}")
+    logging.info(f"\nRound {current_round}/{total_rounds}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
+    logging.info(tabulate(table_data, headers=headers, tablefmt="grid"))

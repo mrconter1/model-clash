@@ -3,7 +3,6 @@ from model import Model
 
 import logging
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 async def send_prompt_to_model(prompt, model: Model):
     providers = get_api_providers()

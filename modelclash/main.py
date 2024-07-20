@@ -15,7 +15,7 @@ async def main():
         # Add more models as needed
     ]
 
-    num_rounds = 100
+    num_rounds = 500
     await run_tournament(models, num_rounds)
 
 if __name__ == "__main__":

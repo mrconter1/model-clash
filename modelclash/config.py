@@ -1,5 +1,9 @@
-import os
 from api_provider import APIProvider
+import logging
+import os
+
+# Configure logging
+logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def initialize_api_providers():
     return {
