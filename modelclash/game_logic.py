@@ -48,7 +48,10 @@ async def run_tournament(models, rounds_per_pair):
             task = asyncio.create_task(run_game(model1, model2, rounds_per_pair, challenge_prompt, state, i, j))
             tasks.append(task)
 
-    await asyncio.gather(*tasks)
+    chunk_size = 10
+    for i in range(0, len(tasks), chunk_size):
+        chunk = tasks[i:i+chunk_size]
+        await asyncio.gather(*chunk)
 
 async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
     model1_id = f"{model1.name}_1"
