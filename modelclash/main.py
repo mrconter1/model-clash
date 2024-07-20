@@ -1,4 +1,4 @@
-from game_logic import run_tournament, print_results_table
+from game_logic import run_tournament
 from config import get_api_providers
 from model import Model
 import asyncio
