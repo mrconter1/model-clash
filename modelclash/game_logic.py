@@ -1,27 +1,56 @@
-import asyncio
-from model_handler import send_prompt_to_model
 from utils import extract_test_cases, run_tests, extract_code_from_response
 from prompts import create_implementation_prompt, create_challenge_prompt
-from model import Model
+from model_handler import send_prompt_to_model
+from tabulate import tabulate
+import asyncio
 
-async def run_tournament(models, num_of_rounds):
+class TournamentState:
+    def __init__(self, num_models, total_rounds):
+        self.results_table = [[1.0 for _ in range(num_models)] for _ in range(num_models)]
+        self.score_table = [[[0, 0] for _ in range(num_models)] for _ in range(num_models)]
+        self.total_rounds = total_rounds
+        self.current_round = 0
+        self.lock = asyncio.Lock()
+        self.pair_progress = {}  # Track progress for each pair
+        self.models = None  # Will be set in run_tournament
+
+    async def update_tables(self, i, j, ratio, score1, score2):
+        async with self.lock:
+            self.results_table[i][j] = ratio
+            if i != j:
+                self.results_table[j][i] = 1 / ratio
+            self.score_table[i][j] = [score1, score2]
+            if i != j:
+                self.score_table[j][i] = [score2, score1]
+            pair_key = (min(i, j), max(i, j))
+            self.pair_progress[pair_key] = self.pair_progress.get(pair_key, 0) + 1
+            self.current_round = sum(self.pair_progress.values())
+            await self.print_results_table()
+
+    async def print_results_table(self):
+        await asyncio.to_thread(print_results_table, self.models, self.results_table, self.score_table, self.current_round, self.total_rounds)
+
+async def run_tournament(models, rounds_per_pair):
     challenge_prompt = create_challenge_prompt()
     num_models = len(models)
-    results_table = [[1.0 for _ in range(num_models)] for _ in range(num_models)]
-    score_table = [[[0, 0] for _ in range(num_models)] for _ in range(num_models)]
+    total_rounds = sum(range(num_models + 1)) * rounds_per_pair
+    state = TournamentState(num_models, total_rounds)
+    state.models = models
+
+    print(f"Starting tournament with {num_models} models, {rounds_per_pair} rounds per pair, total {total_rounds} rounds")
 
     tasks = []
     for i in range(num_models):
         for j in range(i, num_models):
             model1 = models[i]
             model2 = models[j]
-            task = asyncio.create_task(run_game(model1, model2, num_of_rounds, challenge_prompt, results_table, score_table, i, j, models))
+            task = asyncio.create_task(run_game(model1, model2, rounds_per_pair, challenge_prompt, state, i, j))
             tasks.append(task)
 
     await asyncio.gather(*tasks)
-    return results_table, score_table
+    return state.results_table, state.score_table
 
-async def run_game(model1, model2, rounds, challenge_prompt, results_table, score_table, i, j, models):
+async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
     model1_id = f"{model1.name}_1"
     model2_id = f"{model2.name}_2"
     scores = {model1_id: 1, model2_id: 1}
@@ -34,9 +63,6 @@ async def run_game(model1, model2, rounds, challenge_prompt, results_table, scor
             challenge_response = await send_prompt_to_model(challenge_prompt, creator)
             visible_tests, hidden_tests = extract_test_cases(challenge_response)
             
-            if not visible_tests and not hidden_tests:
-                continue
-            
             implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
             creator_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, creator))
             opponent_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, opponent))
@@ -47,16 +73,7 @@ async def run_game(model1, model2, rounds, challenge_prompt, results_table, scor
             update_scores(scores, creator_id, opponent_id, creator_success, opponent_success)
 
         ratio = scores[model1_id] / scores[model2_id] if scores[model2_id] != 0 else float('inf')
-        results_table[i][j] = ratio
-        if i != j:
-            results_table[j][i] = 1 / ratio
-        
-        score_table[i][j] = [scores[model1_id], scores[model2_id]]
-        if i != j:
-            score_table[j][i] = [scores[model2_id], scores[model1_id]]
-
-        # Print results table after each complete round
-        await asyncio.to_thread(print_results_table, models, results_table, score_table, round_num + 1)
+        await state.update_tables(i, j, ratio, scores[model1_id], scores[model2_id])
 
 def update_scores(scores, creator_id, opponent_id, creator_success, opponent_success):
     if creator_success and not opponent_success:
@@ -68,29 +85,28 @@ def update_scores(scores, creator_id, opponent_id, creator_success, opponent_suc
         scores[creator_id] -= 1
         scores[opponent_id] += 3
 
-def print_results_table(models, results_table, score_table, round_num):
+def calculate_ratio(score_a, score_b):
+    min_score = min(score_a, score_b)
+    offset = abs(min_score) + 1 if min_score < 0 else 1
+    adjusted_a = score_a + offset
+    adjusted_b = score_b + offset
+    return adjusted_a / adjusted_b
+
+def print_results_table(models, results_table, score_table, current_round, total_rounds):
     model_names = [model.name for model in models]
     
-    max_name_length = max(len(name) for name in model_names)
-    
-    print(f"\nAfter Round {round_num}:")
-    header = "Model".ljust(max_name_length + 4)
-    for name in model_names:
-        header += f"{name:>24}"
-    print(header)
-    
+    table_data = []
     for i, row in enumerate(results_table):
-        print(f"{model_names[i]:<{max_name_length + 4}}", end="")
+        table_row = [model_names[i]]
         for j in range(len(row)):
-            if j < i:
-                print(f"{' ':>24}", end="")
+            if i == j:
+                table_row.append(f"{1.00:.2f}")
             else:
-                ratio = row[j]
-                score = score_table[i][j]
-                if ratio == float('inf'):
-                    ratio_str = 'inf'
-                else:
-                    ratio_str = f"{ratio:.2f}"
-                print(f"{ratio_str:>10} ({score[0]:>3}-{score[1]:<3})", end="")
-        print()
-    print("\n" + "="*50 + "\n")
+                score_i, score_j = score_table[i][j][0], score_table[i][j][1]
+                ratio = calculate_ratio(score_i, score_j)
+                table_row.append(f"{ratio:.2f}")
+        table_data.append(table_row)
+    
+    headers = ["Model"] + model_names
+    print(f"\nRound {current_round}/{total_rounds}")
+    print(tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".2f"))
