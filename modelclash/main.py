@@ -8,8 +8,8 @@ async def main():
     get_api_providers()
 
     models = [
-        Model("gpt-4o-mini", "openai"),
         Model("gpt-4o", "openai"),
+        Model("gpt-4o-mini", "openai"),
         Model("gpt-3.5-turbo", "openai"),
         Model("claude-3-5-sonnet-20240620", "anthropic"),
         # Add more models as needed
