@@ -13,6 +13,7 @@ class TournamentState:
         self.lock = asyncio.Lock()
         self.pair_progress = {}  # Track progress for each pair
         self.models = None  # Will be set in run_tournament
+        self.rounds_played = [[0 for _ in range(num_models)] for _ in range(num_models)]
 
     async def update_tables(self, i, j, ratio, score1, score2):
         async with self.lock:
@@ -25,10 +26,13 @@ class TournamentState:
             pair_key = (min(i, j), max(i, j))
             self.pair_progress[pair_key] = self.pair_progress.get(pair_key, 0) + 1
             self.current_round = sum(self.pair_progress.values())
+            self.rounds_played[i][j] += 1
+            if i != j:
+                self.rounds_played[j][i] += 1
             await self.print_results_table()
 
     async def print_results_table(self):
-        await asyncio.to_thread(print_results_table, self.models, self.results_table, self.score_table, self.current_round, self.total_rounds)
+        await asyncio.to_thread(print_results_table, self.models, self.results_table, self.score_table, self.rounds_played, self.current_round, self.total_rounds)
 
 async def run_tournament(models, rounds_per_pair):
     challenge_prompt = create_challenge_prompt()
@@ -92,20 +96,22 @@ def calculate_ratio(score_a, score_b):
     adjusted_b = score_b + offset
     return adjusted_a / adjusted_b
 
-def print_results_table(models, results_table, score_table, current_round, total_rounds):
+def print_results_table(models, results_table, score_table, rounds_played, current_round, total_rounds):
     model_names = [model.name for model in models]
     
     table_data = []
     for i in range(len(models)):
-        for j in range(i, len(models)):  # Changed this line
+        for j in range(i, len(models)):
             score_i, score_j = score_table[i][j][0], score_table[i][j][1]
+            rounds = rounds_played[i][j]
             table_data.append([
                 model_names[i],
                 model_names[j],
                 score_i,
-                score_j
+                score_j,
+                rounds
             ])
     
-    headers = ["Player A", "Player B", "A's Score", "B's Score"]
+    headers = ["Player A", "Player B", "A's Score", "B's Score", "Rounds Played"]
     print(f"\nRound {current_round}/{total_rounds}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
