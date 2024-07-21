@@ -39,10 +39,16 @@ Compared to other benchmark approaches such as [MMLU](https://github.com/hendryc
 
 | Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
 |----------------------------|----------------------------|-----------|-----------|---------------|
-| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 8         | 6         | 11            |
-| claude-3-5-sonnet-20240620 | gpt-4o                     | 4         | 7         | 8             |
-| gpt-3.5-turbo              | gpt-4o                     | 6         | 13        | 12            |
-| gpt-4o-mini                | gpt-4o                     | 9         | 10        | 9             |
+| claude-3-5-sonnet-20240620 | claude-3-5-sonnet-20240620 | 48        | 46        | 65            |
+| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 74        | 51        | 80            |
+| claude-3-5-sonnet-20240620 | gpt-4o                     | 40        | 46        | 59            |
+| claude-3-5-sonnet-20240620 | gpt-4o-mini                | 37        | 46        | 56            |
+| gpt-3.5-turbo              | gpt-3.5-turbo              | 99        | 79        | 114           |
+| gpt-3.5-turbo              | gpt-4o                     | 47        | 84        | 82            |
+| gpt-3.5-turbo              | gpt-4o-mini                | 54        | 74        | 70            |
+| gpt-4o                     | gpt-4o                     | 35        | 31        | 59            |
+| gpt-4o-mini                | gpt-4o                     | 49        | 66        | 56            |
+| gpt-4o-mini                | gpt-4o-mini                | 58        | 49        | 52            |
 
 ## 🛠 Getting Started
 
