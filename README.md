@@ -31,11 +31,9 @@ Compared to other benchmark approaches such as [MMLU](https://github.com/hendryc
 
 1. **Automatic Challenge Generation**: Eliminates the need for manual challenge creation, saving time and reducing human bias.
 2. **Infinite Scalability**: Adapts to any level of model capability, ensuring the benchmark remains relevant as AI technology advances.
-3. **Dynamic Content**: Generates new challenges in real-time, preventing memorization and ensuring continuous evolution.
+3. **Living Benchmark**: Real-time challenge generation prevents memorization and data leakage
 4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities, providing a more holistic assessment.
 5. **Extreme Diversity**: Can theoretically cover an unlimited range of problem types and domains, far beyond static benchmarks.
-
-Additionally, unlike static benchmarks, there is no risk of ModelClash challenges leaking or contaminating future training data, as each duel generates unique content.
 
 ## 📊 Results
 
