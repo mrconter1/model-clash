@@ -1,162 +1,104 @@
 # ModelClash: Dynamic LLM Evaluation Arena
 
-## 🚀 About ModelClash
+ModelClash is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive environment. It pits AI models against each other in creative problem-solving challenges, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
-ModelClash is a framework designed to evaluate and compare Large Language Models (LLMs) in a dynamic, competitive environment. By pitting AI models against each other in a series of creative problem-solving challenges, this project offers a approach to benchmarking that adapts to the rapid advancements in AI technology.
+## 🚀 Key Features
 
-### 🌟 Key Features
-
-- **Self-Generating Challenges**: Models create and solve complex problems, eliminating the need for manual dataset creation.
+- **Self-Generating Challenges**: Models create and solve complex problems in real-time.
 - **Adaptive Difficulty**: Automatically scales to match any level of AI intelligence.
-- **Comprehensive Evaluation**: Tests a broad spectrum of skills including creativity, strategy, and self-awareness.
+- **Comprehensive Evaluation**: Tests a broad spectrum of skills including creativity, strategy, and problem-solving.
 
-## 🧠 Why ModelClash?
+## 🎮 How ModelClash Works
 
-Traditional benchmarks for Language Models often suffer from quick saturation and lack of adaptability. ModelClash addresses these issues with three core advantages:
+### Round Structure
 
-1. **Automated, Testable Challenge Generation**
-   - Eliminates the need for expert-created datasets
-   - Reduces human bias in evaluation
-   - Provides quantifiable results through an innovative scoring system
+1. **Challenge Creation**: One model creates a programming challenge with test cases.
+2. **Challenge Solving**: Both models attempt to solve the challenge.
 
-2. **Intelligence-Adaptive Testing**
-   - Automatically adjusts to any level of model capability
-   - Ensures long-term relevance as AI technology advances
-   - Addresses the issue of benchmark saturation
+Models alternate roles, ensuring fair evaluation.
 
-3. **Holistic Intelligence Assessment**
-   - Evaluates a wide range of cognitive skills
-   - Tests both problem-solving and problem-creation abilities
-   - Challenges models in creativity, strategy, and understanding of limitations
+### Scoring System
+
+- Creator solves, opponent fails: Creator +3 points
+- Both solve: Creator +1 point, Opponent +2 points
+- Creator fails, opponent solves: Creator -1 point, Opponent +3 points
+
+This system encourages creating challenges that are difficult yet solvable.
+
+## 🏆 Advantages over Traditional Benchmarks
+
+Compared to benchmarks like MMLU, GPQA, HumanEval, or LMSYS Chatbot Arena, ModelClash offers:
+
+1. **Dynamic Content**: Generates new challenges in real-time, preventing memorization.
+2. **Comprehensive Evaluation**: Tests both problem creation and solving abilities.
+3. **Adaptive Difficulty**: Scales with model capabilities, ensuring long-term relevance.
+4. **Reduced Human Bias**: AI-driven challenge creation and evaluation.
+5. **Diverse Skill Coverage**: Encourages a wide range of problem types.
+6. **Competitive Format**: Provides engaging, insightful head-to-head comparisons.
+
+## 📊 Example Results
+
+| Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
+|----------------------------|----------------------------|-----------|-----------|---------------|
+| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 8         | 6         | 11            |
+| claude-3-5-sonnet-20240620 | gpt-4o                     | 4         | 7         | 8             |
+| gpt-3.5-turbo              | gpt-4o                     | 6         | 13        | 12            |
+| gpt-4o-mini                | gpt-4o                     | 9         | 10        | 9             |
 
 ## 🛠 Getting Started
 
 ### Prerequisites
 
 - Python 3.9+
-- API keys for the models you want to test:
-  - OpenAI API key (for OpenAI models)
-  - Google API key (for Google models)
-  - Anthropic API key (for Anthropic models)
+- API keys for OpenAI, Google, and Anthropic (as needed)
 
 ### Installation
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/ModelClash.git
+   git clone https://github.com/mrconter1/ModelClash.git
    cd ModelClash
    ```
 
-2. Install the required packages:
+2. Install required packages:
    ```
    pip install -r requirements.txt
    ```
 
-3. Set up your environment variables for the API keys of the models you want to use:
+3. Set up API key environment variables:
    ```
-   export OPENAI_API_KEY='your-openai-api-key-here'
-   export GOOGLE_API_KEY='your-google-api-key-here'
-   export ANTHROPIC_API_KEY='your-anthropic-api-key-here'
+   export OPENAI_API_KEY='your-openai-api-key'
+   export GOOGLE_API_KEY='your-google-api-key'
+   export ANTHROPIC_API_KEY='your-anthropic-api-key'
    ```
-   Note: You only need to set the API keys for the models you intend to use in your tests.
 
 ### Usage
 
-Run the main script to start a competition:
+Run the main script:
 
 ```
 python -m modelclash.main
 ```
 
-Note: Ensure you have set the API keys for the models you want to include in your tests before running the script.
-
 ## 📊 Example Challenges
 
-ModelClash results in diverse, algorithmic challenges generated in real-time. Here are two examples created by GPT-4o:
-
-### 1. Character Sorting and Deduplication
+1. Character Sorting and Deduplication
 ```python
 assert X("banana") == "abn"
 assert X("apple") == "aelp"
 assert X("racecar") == "acer"
 ```
 
-### 2. Morse Code Converter
+2. Morse Code Converter
 ```python
 assert X("SOS") == "... --- ..."
 assert X("HELLO") == ".... . .-.. .-.. ---"
 assert X("123") == ".---- ..--- ...--"
 ```
 
-These examples demonstrate the variety and complexity of challenges created dynamically by competing models during ModelClash tournaments.
-
-## 📈 Results
-
-Here's an example of the results table generated by ModelClash:
-
-| Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
-|----------------------------|----------------------------|-----------|-----------|---------------|
-| claude-3-5-sonnet-20240620 | claude-3-5-sonnet-20240620 | 9         | 8         | 8             |
-| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 8         | 6         | 11            |
-| claude-3-5-sonnet-20240620 | gpt-4o                     | 4         | 7         | 8             |
-| claude-3-5-sonnet-20240620 | gpt-4o-mini                | 4         | 4         | 8             |
-| gpt-3.5-turbo              | gpt-3.5-turbo              | 15        | 14        | 19            |
-| gpt-3.5-turbo              | gpt-4o                     | 6         | 13        | 12            |
-| gpt-3.5-turbo              | gpt-4o-mini                | 15        | 20        | 12            |
-| gpt-4o                     | gpt-4o                     | 1         | 6         | 9             |
-| gpt-4o-mini                | gpt-4o                     | 9         | 10        | 9             |
-| gpt-4o-mini                | gpt-4o-mini                | 6         | 8         | 8             |
-
-This table shows the performance of different AI models in head-to-head competitions. Each row represents a matchup between two models, with their respective scores and the number of rounds played.
-
-## 🎮 How ModelClash Works
-
-### Round Structure
-
-Each round in ModelClash consists of two phases:
-
-1. **Challenge Creation**: One model creates a programming challenge and corresponding test cases.
-2. **Challenge Solving**: Both the creator and the opponent attempt to solve the challenge.
-
-This process is repeated with models alternating roles, ensuring a fair and comprehensive evaluation.
-
-### Scoring System
-
-The scoring system in ModelClash is designed to reward both challenge creation and problem-solving abilities:
-
-- If the creator solves the challenge and the opponent fails: Creator +3 points
-- If both the creator and opponent solve the challenge: Creator +1 point, Opponent +2 points
-- If the creator fails to solve their own challenge but the opponent succeeds: Creator -1 point, Opponent +3 points
-
-This scoring mechanism encourages models to create challenges that are difficult yet solvable, striking a balance between complexity and feasibility.
-
-## 🏆 Advantages over Traditional Benchmarks
-
-ModelClash offers several advantages compared to traditional benchmarking approaches such as MMLU, GPQA, DROP, MGSM, MATH, HumanEval, MMMU, or LMSYS (Chatbot Arena):
-
-1. **Dynamic Challenge Generation**: Unlike static benchmarks, ModelClash generates new challenges in real-time, preventing models from memorizing specific answers.
-
-2. **Comprehensive Skill Evaluation**: ModelClash tests both problem creation and problem-solving abilities, providing a more holistic assessment of a model's capabilities.
-
-3. **Adaptive Difficulty**: The challenges automatically scale in difficulty based on the competing models' capabilities, ensuring the benchmark remains relevant as AI technology advances.
-
-4. **Reduced Human Bias**: By having AI models create and evaluate challenges, ModelClash minimizes human bias in the benchmarking process.
-
-5. **Broader Skill Coverage**: Traditional benchmarks often focus on specific domains or skills, while ModelClash encourages a wide range of problem types, testing diverse cognitive abilities.
-
-6. **Competitive Element**: The head-to-head format provides a more engaging and insightful evaluation process compared to static test-taking scenarios.
-
-7. **Continuous Evolution**: Unlike fixed benchmarks, ModelClash evolves with each competition, making it harder for models to be specifically trained for the benchmark.
-
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Contributions are welcome! Please fork the project, create a feature branch, and open a pull request.
 
 ## 📜 License
 
@@ -167,12 +109,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 Rasmus Lindahl - rasmus.lindahl1996@gmail.com
 
 Project Link: [https://github.com/mrconter1/ModelClash](https://github.com/mrconter1/ModelClash)
-
-## 🙏 Acknowledgments
-
-- [OpenAI](https://openai.com/)
-- [Google AI](https://ai.google/)
-- [Anthropic](https://www.anthropic.com/)
 
 ---
 
