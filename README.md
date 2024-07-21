@@ -27,7 +27,7 @@ This system encourages creating challenges that are difficult yet solvable.
 
 ## 🏆 Top 5 Advantages over Traditional Benchmarks
 
-Compared to other benchmarks, ModelClash offers:
+Compared to other benchmark approaches such as [MMLU](https://github.com/hendrycks/test), [GPQA](https://github.com/idavidrein/gpqa), or [Chatbot Arena](https://chat.lmsys.org/), ModelClash offers:
 
 1. **Automatic Challenge Generation**: Eliminates the need for manual challenge creation, saving time and reducing human bias.
 2. **Infinite Scalability**: Adapts to any level of model capability, ensuring the benchmark remains relevant as AI technology advances.
@@ -35,7 +35,9 @@ Compared to other benchmarks, ModelClash offers:
 4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities, providing a more holistic assessment.
 5. **Extreme Diversity**: Can theoretically cover an unlimited range of problem types and domains, far beyond static benchmarks.
 
-## 📊 Example Results
+Additionally, unlike static benchmarks, there is no risk of ModelClash challenges leaking or contaminating future training data, as each duel generates unique content.
+
+## 📊 Results
 
 | Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
 |----------------------------|----------------------------|-----------|-----------|---------------|
