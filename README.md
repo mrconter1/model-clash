@@ -13,7 +13,7 @@ ModelClash is a framework for evaluating and comparing Large Language Models (LL
 ### Duel Structure
 
 1. **Challenge Creation**: One model creates a programming challenge with test cases.
-2. **Challenge Solving**: Both models attempt to solve the challenge.
+2. **Challenge Solving**: Both models, with no memory of the creation phase, attempt to solve the challenge.
 
 Models alternate roles, ensuring fair evaluation.
 
