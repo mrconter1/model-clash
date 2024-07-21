@@ -2,6 +2,23 @@
 
 ModelClash is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive environment. It pits AI models against each other in creative problem-solving duels, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
+## Table of Contents
+- [About ModelClash](#about-modelclash)
+- [Key Features](#key-features)
+- [How ModelClash Works](#how-modelclash-works)
+  - [Duel Structure](#duel-structure)
+  - [Scoring System](#scoring-system)
+- [Advantages over Traditional Benchmarks](#advantages-over-traditional-benchmarks)
+- [Results](#results)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+- [Example Challenges](#example-challenges)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
 ## 🚀 Key Features
 
 - **Self-Generating Challenges**: Models create and solve complex problems in real-time.
