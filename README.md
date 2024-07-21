@@ -52,16 +52,16 @@ Compared to other existing benchmark approaches such as [MMLU](https://github.co
 
 | Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
 |----------------------------|----------------------------|-----------|-----------|---------------|
-| claude-3-5-sonnet-20240620 | claude-3-5-sonnet-20240620 | 48        | 46        | 347           |
-| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 76        | 148       | 247           |
-| claude-3-5-sonnet-20240620 | gpt-4o                     | 39        | 133       | 187           |
-| claude-3-5-sonnet-20240620 | gpt-4o-mini                | 35        | 187       | 183           |
-| gpt-3.5-turbo              | gpt-3.5-turbo              | 200       | 172       | 254           |
-| gpt-3.5-turbo              | gpt-4o                     | 108       | 185       | 190           |
-| gpt-3.5-turbo              | gpt-4o-mini                | 135       | 154       | 171           |
-| gpt-4o                     | gpt-4o                     | 77        | 64        | 144           |
-| gpt-4o-mini                | gpt-4o                     | 101       | 134       | 137           |
-| gpt-4o-mini                | gpt-4o-mini                | 126       | 129       | 131           |
+| claude-3-5-sonnet-20240620 | claude-3-5-sonnet-20240620 | 48        | 43        | 50            |
+| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 74        | 48        | 69            |
+| claude-3-5-sonnet-20240620 | gpt-4o                     | 39        | 39        | 52            |
+| claude-3-5-sonnet-20240620 | gpt-4o-mini                | 37        | 34        | 49            |
+| gpt-3.5-turbo              | gpt-3.5-turbo              | 94        | 75        | 106           |
+| gpt-3.5-turbo              | gpt-4o                     | 46        | 82        | 76            |
+| gpt-3.5-turbo              | gpt-4o-mini                | 54        | 71        | 64            |
+| gpt-4o                     | gpt-4o                     | 30        | 30        | 55            |
+| gpt-4o-mini                | gpt-4o                     | 46        | 57        | 51            |
+| gpt-4o-mini                | gpt-4o-mini                | 55        | 43        | 49            |
 
 ## 🛠 Getting Started
 
