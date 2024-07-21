@@ -6,46 +6,61 @@ import asyncio
 import logging
 
 class TournamentState:
-    def __init__(self, num_models, total_rounds):
-        self.score_table = [[[1, 1] for _ in range(num_models)] for _ in range(num_models)]
+    def __init__(self, model_templates, total_rounds):
+        self.model_templates = model_templates
         self.total_rounds = total_rounds
         self.current_round = 0
         self.lock = asyncio.Lock()
         self.pair_progress = {}  # Track progress for each pair
-        self.models = None  # Will be set in run_tournament
-        self.rounds_played = [[0 for _ in range(num_models)] for _ in range(num_models)]
+        self.score_table = {}
+        self.rounds_played = {}
+        self.model_instances = {}  # Dictionary to store all model instances
 
-    async def update_tables(self, i, j, ratio, score1, score2):
+    async def update_tables(self, model1, model2, score1, score2):
         async with self.lock:
-            self.score_table[i][j] = [score1, score2]
-            if i != j:
-                self.score_table[j][i] = [score2, score1]
-            pair_key = (min(i, j), max(i, j))
+            id1, id2 = model1.unique_id, model2.unique_id
+            self.model_instances[id1] = model1  # Store model instance
+            self.model_instances[id2] = model2  # Store model instance
+            
+            if id1 not in self.score_table:
+                self.score_table[id1] = {}
+                self.rounds_played[id1] = {}
+            if id2 not in self.score_table:
+                self.score_table[id2] = {}
+                self.rounds_played[id2] = {}
+            
+            self.score_table[id1][id2] = [score1, score2]
+            self.score_table[id2][id1] = [score2, score1]
+            pair_key = (min(id1, id2), max(id1, id2))
             self.pair_progress[pair_key] = self.pair_progress.get(pair_key, 0) + 1
             self.current_round = sum(self.pair_progress.values())
-            self.rounds_played[i][j] += 1
-            if i != j:
-                self.rounds_played[j][i] += 1
+            
+            if id2 not in self.rounds_played[id1]:
+                self.rounds_played[id1][id2] = 0
+            if id1 not in self.rounds_played[id2]:
+                self.rounds_played[id2][id1] = 0
+            
+            self.rounds_played[id1][id2] += 1
+            self.rounds_played[id2][id1] += 1
             await self.print_results_table()
 
     async def print_results_table(self):
-        await asyncio.to_thread(print_results_table, self.models, self.score_table, self.rounds_played, self.current_round, self.total_rounds)
+        await asyncio.to_thread(print_results_table, self.model_instances, self.score_table, self.rounds_played, self.current_round, self.total_rounds)
 
 async def run_tournament(models, rounds_per_pair):
     challenge_prompt = create_challenge_prompt()
     num_models = len(models)
     total_rounds = sum(range(num_models + 1)) * rounds_per_pair
-    state = TournamentState(num_models, total_rounds)
-    state.models = models
+    state = TournamentState(models, total_rounds)
 
     logging.info(f"Starting tournament with {num_models} models, {rounds_per_pair} rounds per pair, total {total_rounds} rounds")
 
     tasks = []
     for i in range(num_models):
         for j in range(i, num_models):
-            model1 = models[i]
-            model2 = models[j]
-            task = asyncio.create_task(run_game(model1, model2, rounds_per_pair, challenge_prompt, state, i, j))
+            model1 = models[i].new_instance()
+            model2 = models[j].new_instance()
+            task = asyncio.create_task(run_game(model1, model2, rounds_per_pair, challenge_prompt, state))
             tasks.append(task)
 
     chunk_size = 10
@@ -53,31 +68,31 @@ async def run_tournament(models, rounds_per_pair):
         chunk = tasks[i:i+chunk_size]
         await asyncio.gather(*chunk)
 
-async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
-    model1_id = f"{model1.name}_1"
-    model2_id = f"{model2.name}_2"
+async def run_game(model1, model2, rounds, challenge_prompt, state):
+    model1_id = model1.unique_id
+    model2_id = model2.unique_id
     scores = {model1_id: 1, model2_id: 1}
     
     for round_num in range(rounds):
         for creator, opponent in [(model1, model2), (model2, model1)]:
-            creator_id = model1_id if creator == model1 else model2_id
-            opponent_id = model2_id if opponent == model2 else model1_id
+            creator_id = creator.unique_id
+            opponent_id = opponent.unique_id
             
             try:
                 challenge_response = await send_prompt_to_model(challenge_prompt, creator)
-                logging.info(f"Challenge response from {creator.name}: {challenge_response[:250]}...")
+                logging.info(f"Challenge response from {creator.name} ({creator_id}): {challenge_response[:250]}...")
                 
                 visible_tests, hidden_tests = extract_test_cases(challenge_response)
                 if not visible_tests or not hidden_tests:
-                    logging.error(f"Failed to extract test cases for {creator.name}")
+                    logging.error(f"Failed to extract test cases for {creator.name} ({creator_id})")
                     continue
                 
                 implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
                 creator_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, creator))
                 opponent_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, opponent))
                 
-                logging.info(f"Creator ({creator.name}) implementation: {creator_implementation[:100]}...")
-                logging.info(f"Opponent ({opponent.name}) implementation: {opponent_implementation[:100]}...")
+                logging.info(f"Creator ({creator.name} {creator_id}) implementation: {creator_implementation[:100]}...")
+                logging.info(f"Opponent ({opponent.name} {opponent_id}) implementation: {opponent_implementation[:100]}...")
 
                 creator_success = run_tests(creator_implementation, visible_tests, hidden_tests)
                 opponent_success = run_tests(opponent_implementation, visible_tests, hidden_tests)
@@ -86,10 +101,9 @@ async def run_game(model1, model2, rounds, challenge_prompt, state, i, j):
                 
                 update_scores(scores, creator_id, opponent_id, creator_success, opponent_success)
             except Exception as e:
-                logging.error(f"Error in round {round_num} for {creator.name} vs {opponent.name}: {str(e)}")
+                logging.error(f"Error in round {round_num} for {creator.name} ({creator_id}) vs {opponent.name} ({opponent_id}): {str(e)}")
 
-        ratio = scores[model1_id] / scores[model2_id] if scores[model2_id] != 0 else float('inf')
-        await state.update_tables(i, j, ratio, scores[model1_id], scores[model2_id])
+        await state.update_tables(model1, model2, scores[model1_id], scores[model2_id])
 
 def update_scores(scores, creator_id, opponent_id, creator_success, opponent_success):
     if creator_success and not opponent_success:
@@ -101,28 +115,25 @@ def update_scores(scores, creator_id, opponent_id, creator_success, opponent_suc
         scores[creator_id] -= 1
         scores[opponent_id] += 3
 
-def calculate_ratio(score_a, score_b):
-    min_score = min(score_a, score_b)
-    offset = abs(min_score) + 1 if min_score < 0 else 1
-    adjusted_a = score_a + offset
-    adjusted_b = score_b + offset
-    return adjusted_a / adjusted_b
-
-def print_results_table(models, score_table, rounds_played, current_round, total_rounds):
-    model_names = [model.name for model in models]
-    
+def print_results_table(model_instances, score_table, rounds_played, current_round, total_rounds):
     table_data = []
-    for i in range(len(models)):
-        for j in range(i, len(models)):
-            score_i, score_j = score_table[i][j][0], score_table[i][j][1]
-            rounds = rounds_played[i][j]
-            table_data.append([
-                model_names[i],
-                model_names[j],
-                score_i,
-                score_j,
-                rounds
-            ])
+    for id1 in score_table:
+        for id2 in score_table[id1]:
+            if id1 < id2:  # Avoid duplicate entries
+                score_i, score_j = score_table[id1][id2][0], score_table[id1][id2][1]
+                rounds = rounds_played[id1][id2]
+                model1 = model_instances[id1]  # Get the model instance directly
+                model2 = model_instances[id2]  # Get the model instance directly
+                table_data.append([
+                    f"{model1.name}",
+                    f"{model2.name}",
+                    score_i,
+                    score_j,
+                    rounds
+                ])
+
+    # Sort the table_data based on the first two columns
+    table_data.sort(key=lambda x: (x[0].lower(), x[1].lower()))
     
     headers = ["Player A", "Player B", "A's Score", "B's Score", "Rounds Played"]
 
