@@ -1,6 +1,6 @@
 # ModelClash: Dynamic LLM Evaluation Duel
 
-ModelClash is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive environment. It pits AI models against each other in creative problem-solving duels, offering an adaptive approach to benchmarking that evolves with AI advancements.
+`ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive environment. It pits AI models against each other in creative problem-solving duels, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
 ## Table of Contents
 - [How ModelClash Works](#-how-modelclash-works)
@@ -22,7 +22,9 @@ ModelClash is a framework for evaluating and comparing Large Language Models (LL
 
 3. **Role Switch**: Models switch roles, with the previous solver becoming the challenge creator and vice versa.
 
-Note: The challenge creator is explicitly informed it must later solve its own challenge without access to any memory of the creation process. It is also told that the goal is to create a challenge the opponent will fail while ensuring its own success.
+> [!NOTE]
+>
+> The challenge creator is explicitly informed it must later solve its own challenge without access to any memory of the creation process. It is also told that the goal is to create a challenge the opponent will fail while ensuring its own success.
 
 ### Scoring System
 
