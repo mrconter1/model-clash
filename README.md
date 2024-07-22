@@ -47,7 +47,7 @@ Compared to other existing benchmark approaches such as [MMLU](https://github.co
 2. **Infinite Scalability**: Adapts to any level of model capability, ensuring the benchmark remains relevant as AI technology advances.
 3. **Living Benchmark**: Real-time challenge generation prevents memorization and data leakage
 4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities, providing a more holistic assessment.
-5. **Extreme Diversity**: Can theoretically cover an unlimited range of problem types and domains, far beyond static benchmarks.
+5. **Extreme Diversity**: Can theoretically cover a large range of problem types and domains.
 
 ## 📊 Results
 
