@@ -13,12 +13,6 @@ ModelClash is a framework for evaluating and comparing Large Language Models (LL
 - [License](#-license)
 - [Contact](#-contact)
 
-## 🚀 Key Features
-
-- **Self-Generating Challenges**: Models create and solve complex problems in real-time.
-- **Adaptive Difficulty**: Automatically scales to match any level of AI intelligence.
-- **Comprehensive Evaluation**: Tests a broad spectrum of skills including creativity, strategy, and problem-solving.
-
 ## 🎮 How ModelClash Works
 
 ### Duel Structure
