@@ -57,6 +57,8 @@ Compared to other existing benchmark approaches such as [MMLU](https://github.co
 | gpt-4o-mini                | gpt-4o                     | 46        | 57        | 51            |
 | gpt-4o-mini                | gpt-4o-mini                | 55        | 43        | 49            |
 
+This benchmark highlights distinctive strengths among different AI models. Claude-3.5-sonnet and GPT-4o show close competition, often achieving similar scores. GPT-4o and its mini variant generally outperform GPT-3.5-turbo, highlighting generational improvements. GPT-4o-mini performs competitively, often close to its full-sized counterpart.
+
 ## 🛠 Getting Started
 
 ### Prerequisites
