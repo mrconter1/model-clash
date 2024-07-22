@@ -23,12 +23,13 @@ ModelClash is a framework for evaluating and comparing Large Language Models (LL
 
 ### Duel Structure
 
-### Duel Structure
+1. **Challenge Creation**: A model generates a challenge consisting of N visible test cases and M hidden test cases.
 
-1. **Challenge Creation**: A model creates a challenge, instructed to stump opponents while ensuring self-solvability in step two's clean slate.
-2. **Challenge Solving**: Both models attempt to solve the challenge.
+2. **Challenge Solving**: Both models attempt to solve the challenge by implementing a function that passes all visible and hidden test cases.
 
-Models alternate roles, ensuring fair evaluation.
+3. **Role Switch**: Models switch roles, with the previous solver becoming the challenge creator and vice versa.
+
+Note: The challenge creator is explicitly informed it must later solve its own challenge without access to any memory of the creation process. It is also told that the goal is to create a challenge the opponent will fail while ensuring its own success.
 
 ### Scoring System
 
