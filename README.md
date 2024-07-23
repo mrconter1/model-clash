@@ -72,8 +72,8 @@ This benchmark highlights distinctive strengths among different AI models. Claud
 
 1. Clone the repository:
    ```
-   git clone https://github.com/mrconter1/ModelClash.git
-   cd ModelClash
+   git clone https://github.com/mrconter1/model-clash.git
+   cd MODEL-CLASH
    ```
 
 2. Install required packages:
