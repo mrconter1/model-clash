@@ -66,7 +66,7 @@ This benchmark highlights distinctive strengths among different AI models. Claud
 ### Prerequisites
 
 - Python 3.9+
-- API keys for OpenAI, Google, and Anthropic (as needed)
+- API keys for OpenAI, Google (not yet fully supported), and Anthropic (as needed)
 
 ### Installation
 
