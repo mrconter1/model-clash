@@ -2,8 +2,12 @@ from game_logic import run_tournament
 from model import Model
 import logging
 import asyncio
+import warnings
 
 logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+warnings.filterwarnings("ignore", message="Event loop is closed")
+
 
 # Define the model list here
 MODELS = [
@@ -21,7 +25,7 @@ MODELS = [
 
 async def main():
     models = [Model(model_name) for model_name in MODELS]
-    rounds_per_model = 50
+    rounds_per_model = 1
     await run_tournament(models, rounds_per_model)
 
 if __name__ == "__main__":
