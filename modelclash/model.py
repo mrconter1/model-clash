@@ -1,10 +1,9 @@
-import uuid
+import os
 
 class Model:
-    def __init__(self, name, provider):
+    def __init__(self, name):
         self.name = name
-        self.provider = provider
-        self.unique_id = f"{name}_{uuid.uuid4().hex[:8]}"
+        self.unique_id = f"{name}_{os.urandom(4).hex()}"
 
     def new_instance(self):
-        return Model(self.name, self.provider)
+        return Model(self.name)

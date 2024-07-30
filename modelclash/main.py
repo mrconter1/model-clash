@@ -1,21 +1,28 @@
 from game_logic import run_tournament
-from config import get_api_providers
 from model import Model
+import logging
 import asyncio
 
+logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Define the model list here
+MODELS = [
+    "google/gemini-pro-1.5",
+    "anthropic/claude-3-opus",
+    "anthropic/claude-3.5-sonnet",
+    "openai/gpt-3.5-turbo",
+    "openai/gpt-4-turbo",
+    "openai/gpt-4",
+    "openai/gpt-4o-mini",
+    "meta-llama/llama-3.1-8b-instruct",
+    "meta-llama/llama-3.1-70b-instruct",
+    "meta-llama/llama-3.1-405b-instruct"
+]
+
 async def main():
-    # Ensure API providers are initialized
-    get_api_providers()
+    models = [Model(model_name) for model_name in MODELS]
 
-    models = [
-        Model("gpt-4o", "openai"),
-        Model("gpt-4o-mini", "openai"),
-        Model("gpt-3.5-turbo", "openai"),
-        Model("claude-3-5-sonnet-20240620", "anthropic"),
-        # Add more models as needed
-    ]
-
-    num_rounds = 500
+    num_rounds = 100
     await run_tournament(models, num_rounds)
 
 if __name__ == "__main__":

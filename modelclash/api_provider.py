@@ -1,50 +1,51 @@
-from aiolimiter import AsyncLimiter
 from openai import AsyncOpenAI
-import google.generativeai as genai
-from anthropic import AsyncAnthropic
+from aiolimiter import AsyncLimiter
+import asyncio
+import os
+import logging
+import sys
 
-class APIProvider:
-    def __init__(self, name, api_key, rate_limit, period):
-        self.name = name
-        self.api_key = api_key
-        self.limiter = AsyncLimiter(rate_limit, period)
-        self.client = self._setup_client()
+logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    def _setup_client(self):
-        if self.name == "openai":
-            return AsyncOpenAI(api_key=self.api_key)
-        elif self.name == "google":
-            genai.configure(api_key=self.api_key)
-            return genai
-        elif self.name == "anthropic":
-            return AsyncAnthropic(api_key=self.api_key)
-        else:
-            raise ValueError(f"Unsupported provider: {self.name}")
+class OpenRouterProvider:
+    _instance = None
+    _lock = asyncio.Lock()
+    _rate_limiter = AsyncLimiter(1, 1)  # 1 request per 1 second
 
-    async def send_prompt(self, prompt, model_name):
-        async with self.limiter:
-            if self.name == "openai":
-                chat_completion = await self.client.chat.completions.create(
-                    model=model_name,
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": prompt}
-                    ]
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(OpenRouterProvider, cls).__new__(cls)
+            cls._instance.client = AsyncOpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=os.getenv('OPENROUTER_API_KEY')
+            )
+        return cls._instance
+
+    async def send_prompt(self, prompt: str, model: str) -> str:
+        async with self._rate_limiter:
+            try:
+                response = await self.client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}]
                 )
-                return chat_completion.choices[0].message.content
-            elif self.name == "google":
-                google_model = self.client.GenerativeModel(model_name)
-                response = await google_model.generate_content(prompt)
-                return response.text
-            elif self.name == "anthropic":
-                message = await self.client.messages.create(
-                    max_tokens=4096,
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": prompt,
-                        }
-                    ],
-                    model="claude-3-5-sonnet-20240620",
-                )
-                return message.content[0].text
+                
+                # Check if the status code is available in the response
+                status_code = getattr(response, 'status_code', None)
+                if status_code is not None and status_code != 200:
+                    error_message = f"Error: Received status code {status_code} for model {model}"
+                    print(error_message, file=sys.stderr)
+                    logging.error(error_message)
+                    return f"An error occurred: {error_message}"
+                
+                return response.choices[0].message.content
+            except Exception as e:
+                error_message = f"Error in API call to {model}: {str(e)}"
+                print(error_message, file=sys.stderr)
+                logging.error(error_message)
+                return f"An error occurred: {str(e)}"
+
+    @staticmethod
+    def log_http_request(method, url, status):
+        log_message = f"HTTP Request: {method} {url} {status}"
+        print(log_message)
+        logging.info(log_message)

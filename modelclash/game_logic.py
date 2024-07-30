@@ -1,6 +1,6 @@
+from api_provider import OpenRouterProvider
 from utils import extract_test_cases, run_tests, extract_code_from_response
 from prompts import create_implementation_prompt, create_challenge_prompt
-from model_handler import send_prompt_to_model
 from tabulate import tabulate
 import asyncio
 import logging
@@ -72,6 +72,7 @@ async def run_game(model1, model2, rounds, challenge_prompt, state):
     model1_id = model1.unique_id
     model2_id = model2.unique_id
     scores = {model1_id: 1, model2_id: 1}
+    provider = OpenRouterProvider()
     
     for round_num in range(rounds):
         for creator, opponent in [(model1, model2), (model2, model1)]:
@@ -79,7 +80,7 @@ async def run_game(model1, model2, rounds, challenge_prompt, state):
             opponent_id = opponent.unique_id
             
             try:
-                challenge_response = await send_prompt_to_model(challenge_prompt, creator)
+                challenge_response = await provider.send_prompt(challenge_prompt, creator.name)
                 logging.info(f"Challenge response from {creator.name} ({creator_id}): {challenge_response[:250]}...")
                 
                 visible_tests, hidden_tests = extract_test_cases(challenge_response)
@@ -88,8 +89,8 @@ async def run_game(model1, model2, rounds, challenge_prompt, state):
                     continue
                 
                 implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
-                creator_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, creator))
-                opponent_implementation = extract_code_from_response(await send_prompt_to_model(implementation_prompt, opponent))
+                creator_implementation = extract_code_from_response(await provider.send_prompt(implementation_prompt, creator.name))
+                opponent_implementation = extract_code_from_response(await provider.send_prompt(implementation_prompt, opponent.name))
                 
                 logging.info(f"Creator ({creator.name} {creator_id}) implementation: {creator_implementation[:100]}...")
                 logging.info(f"Opponent ({opponent.name} {opponent_id}) implementation: {opponent_implementation[:100]}...")
