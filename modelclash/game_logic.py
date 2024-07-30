@@ -20,9 +20,8 @@ class TournamentState:
 
     async def increment_completed_round(self, model_id):
         async with self.lock:
-            if self.completed_rounds[model_id] < self.rounds_per_model:
-                self.completed_rounds[model_id] += 1
-                await self.print_results_table()
+            self.completed_rounds[model_id] += 1
+            await self.print_results_table()
 
     async def print_results_table(self):
         await asyncio.to_thread(print_results_table, self.models, self.scores, self.completed_rounds, self.rounds_per_model)
@@ -40,9 +39,6 @@ async def run_tournament(models, rounds_per_model):
     await asyncio.gather(*tasks)
 
 async def run_round(creator_model, all_models, provider, state):
-    if state.completed_rounds[creator_model.unique_id] >= state.rounds_per_model:
-        return  # Skip if this model has already completed all its rounds
-
     challenge_prompt = create_challenge_prompt()
     challenge_response = await provider.send_prompt(challenge_prompt, creator_model.name)
     
