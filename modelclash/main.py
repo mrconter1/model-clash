@@ -21,9 +21,8 @@ MODELS = [
 
 async def main():
     models = [Model(model_name) for model_name in MODELS]
-
-    num_rounds = 100
-    await run_tournament(models, num_rounds)
+    rounds_per_model = 10
+    await run_tournament(models, rounds_per_model)
 
 if __name__ == "__main__":
     asyncio.run(main())

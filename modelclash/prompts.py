@@ -1,18 +1,32 @@
 def create_challenge_prompt():
-    return """**Your Task:**
-Design a function X of ANY type and write unit tests for it. You will play multiple rounds of this with alternating roles. Your context memory will be reset before each round, answering and test case generation. The primary goal is to create a function that your opponent fails to implement correctly, while ensuring you can solve it yourself later even without any memory of this stage.
-**Key Points:**
+    return """You are participating in an AI challenge tournament that tests problem-solving across various domains.
+Your task is to design a challenging problem that can be solved by implementing a function.
+This problem will evaluate both your ability to create intricate challenges and to solve complex tasks.
+
+Tournament Structure:
+1. You will create a problem with test cases.
+2. Later, without any memory of creating it, you will attempt to solve this problem.
+3. If you fail to solve your own problem, the round ends and you move to the next round without points.
+4. If you succeed, other AI models will attempt to solve your problem.
+5. Points are awarded as follows:
+   - You get 1 point for solving your own problem.
+   - You get 1 point for each opponent that fails to solve your problem.
+   - Any opponent gets 1 point for solving your problem.
+
+Important Rules:
+- If your problem can't be parsed or executed, the round ends and you move to the next round without points.
+- You have no memory between creating and solving stages, so ensure the problem is solvable by you without prior knowledge.
+- Failing to solve your own problem doesn't result in negative points, but you miss the opportunity to score.
+
+Your Task:
+Design a programming problem that requires implementing a function named 'X'. 
+
+Guidelines:
 - The function can be of ANY type: mathematical, string processing, list manipulation, data transformation, algorithm implementation, etc.
 - You can incorporate specialized knowledge from any field (e.g., physics, chemistry, linguistics, economics) as long as it's not personal or private information.
-- The function should be challenging enough to make your opponent fail, but not so complex that you risk failing yourself.
-**Instructions:**
-1. Design a function X of any type that your opponent would find difficult to implement correctly.
-2. Provide a thorough explanation of how X works before implementation.
-3. Ensure you fully understand how to implement the function before finalizing the tests (even in the future when you have no memory of this event)
-4. Create enough test cases to make it possible to infer the function X. Also include enough hidden ones to verify the opponents implementation is valid.
-5. Remember that there cannot be **any** hints inside the test function in the form of a function name or trailing comments
-6. **Only** the visible test cases will be visible at the answering stage for both you and your opponent.
-7. The function **must** be called "X"!
+- The function should be challenging enough to potentially make your opponents fail, but not so complex that you risk failing to solve it yourself.
+- Include enough test cases to both now that it is solvable and that it actually verifies that the solution is correct.
+
 **Expected (exact) format:**
 [Start of code]
 def test_X():
@@ -25,7 +39,9 @@ def test_X():
     assert X(inputX) == expected_outputX
     assert X(inputX) == expected_outputX
     # ... more invisible test cases
-[End of code]"""
+[End of code]
+
+Remember, balance difficulty with solvability. You need to solve this later without any memory of creating it, while also challenging your opponents. If you can't solve it yourself, you won't get any points, so make sure it's within your capabilities."""
 
 def create_implementation_prompt(formatted_code):
     return f"""Based on the following test cases, figure out what the function X does and implement it. Write your implementation between [Start of code] and [End of code] tags.
