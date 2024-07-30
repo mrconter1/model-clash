@@ -126,8 +126,8 @@ def print_results_table(model_instances, score_table, rounds_played, current_rou
                 model1 = model_instances[id1]  # Get the model instance directly
                 model2 = model_instances[id2]  # Get the model instance directly
                 table_data.append([
-                    f"{model1.name}",
-                    f"{model2.name}",
+                    f"{model1.display_name}",
+                    f"{model2.display_name}",
                     score_i,
                     score_j,
                     rounds
