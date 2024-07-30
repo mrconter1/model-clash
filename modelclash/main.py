@@ -21,7 +21,7 @@ MODELS = [
 
 async def main():
     models = [Model(model_name) for model_name in MODELS]
-    rounds_per_model = 10
+    rounds_per_model = 50
     await run_tournament(models, rounds_per_model)
 
 if __name__ == "__main__":
