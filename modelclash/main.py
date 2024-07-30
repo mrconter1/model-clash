@@ -8,7 +8,6 @@ logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, for
 
 warnings.filterwarnings("ignore", message="Event loop is closed")
 
-
 # Define the model list here
 MODELS = [
     "google/gemini-pro-1.5",
