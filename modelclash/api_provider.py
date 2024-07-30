@@ -10,7 +10,7 @@ logging.basicConfig(filename='output.log', filemode='w', level=logging.INFO, for
 class OpenRouterProvider:
     _instance = None
     _lock = asyncio.Lock()
-    _rate_limiter = AsyncLimiter(1, 1)  # 1 request per 1 second
+    _rate_limiter = AsyncLimiter(1, 2.5)  # 1 request per 2.5 second
 
     def __new__(cls):
         if cls._instance is None:
