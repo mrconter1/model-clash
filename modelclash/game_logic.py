@@ -20,8 +20,9 @@ class TournamentState:
 
     async def increment_completed_round(self, model_id):
         async with self.lock:
-            self.completed_rounds[model_id] += 1
-            await self.print_results_table()
+            if self.completed_rounds[model_id] < self.rounds_per_model:
+                self.completed_rounds[model_id] += 1
+                await self.print_results_table()
 
     async def print_results_table(self):
         await asyncio.to_thread(print_results_table, self.models, self.scores, self.completed_rounds, self.rounds_per_model)
@@ -39,6 +40,9 @@ async def run_tournament(models, rounds_per_model):
     await asyncio.gather(*tasks)
 
 async def run_round(creator_model, all_models, provider, state):
+    if state.completed_rounds[creator_model.unique_id] >= state.rounds_per_model:
+        return  # Skip if this model has already completed all its rounds
+
     challenge_prompt = create_challenge_prompt()
     challenge_response = await provider.send_prompt(challenge_prompt, creator_model.name)
     
@@ -46,7 +50,7 @@ async def run_round(creator_model, all_models, provider, state):
     if not visible_tests or not hidden_tests:
         logging.error(f"Failed to extract test cases for {creator_model.name}")
         await state.increment_completed_round(creator_model.unique_id)
-        return
+        return  # Created challenge can't be parsed, round ends
 
     implementation_prompt = create_implementation_prompt('\n'.join(visible_tests))
     
@@ -54,9 +58,8 @@ async def run_round(creator_model, all_models, provider, state):
     creator_implementation = extract_code_from_response(await provider.send_prompt(implementation_prompt, creator_model.name))
     creator_success = run_tests(creator_implementation, visible_tests, hidden_tests)
     
-    await state.increment_completed_round(creator_model.unique_id)
-
     if not creator_success:
+        await state.increment_completed_round(creator_model.unique_id)
         return  # If creator can't solve its own challenge, round ends
 
     await state.update_score(creator_model.unique_id, 1)  # Point for solving own challenge
@@ -69,7 +72,7 @@ async def run_round(creator_model, all_models, provider, state):
     
     await asyncio.gather(*opponent_tasks)
 
-    # Move this line to here, after all opponent attempts are completed
+    # Increment completed round after all opponents have attempted
     await state.increment_completed_round(creator_model.unique_id)
 
 async def run_opponent_attempt(opponent_model, implementation_prompt, visible_tests, hidden_tests, state, creator_model, provider):
