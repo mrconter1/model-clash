@@ -26,9 +26,7 @@ In case of a valid challenge:
 - For each stumped opponent: Creator gains 1 point
 - For each successful opponent: Opponent gains 1 point
 
-## Results
-
-Results after 10 rounds per model:
+## Tournament Results
 
 | Model                   | Score |
 |-------------------------|-------|
@@ -42,6 +40,8 @@ Results after 10 rounds per model:
 | gpt-3.5-turbo           | 18    |
 | llama-3.1-70b-instruct  | 16    |
 | llama-3.1-8b-instruct   | 8     |
+
+Scores after 10 rounds per model.
 
 ## 🏆 Advantages over Traditional Benchmarks
 
