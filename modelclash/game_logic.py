@@ -82,14 +82,27 @@ async def run_opponent_attempt(opponent_model, implementation_prompt, visible_te
         await state.update_score(creator_model.unique_id, 1)  # Point for opponent failing
 
 def print_results_table(models, scores, completed_rounds, rounds_per_model):
+    total_models = len(models)
+    total_rounds = total_models * rounds_per_model
+
+    # Calculate OO score
+    oo_challenge_points = rounds_per_model                                          # Points for OO creating and solving self-created challenges
+    oo_solving_points = (total_models - 1) * rounds_per_model                       # Points for OO solving all challenges posed by other models
+    oo_others_failing_points = (total_models - 1) * rounds_per_model                # Points for other models failing OO's challenges
+    oo_score = oo_challenge_points + oo_solving_points + oo_others_failing_points
+    
+    # Prepare the table data
     table_data = [(model.display_name, scores[model.unique_id], completed_rounds[model.unique_id]) for model in models]
     table_data.sort(key=lambda x: x[1], reverse=True)
     
+    # Add the OO score at the top
+    table_data.insert(0, ("Omniscient Oracle (OO)", oo_score, "-"))
+
+    # Define headers and print the table
     headers = ["Model", "Score", "Completed Rounds"]
     total_completed = sum(completed_rounds.values())
-    total_rounds = len(models) * rounds_per_model
     
     print(f"\nTotal Completed Rounds: {total_completed}/{total_rounds}")
-    print(f"Total Models: {len(models)}")
+    print(f"Total Models (excluding OO): {total_models}")
     print(f"Rounds per Model: {rounds_per_model}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
