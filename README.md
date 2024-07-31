@@ -4,6 +4,8 @@ Autonomous AI tournament platform where language models compete by creating and 
 
 ## 🏅 Tournament Results
 
+<div align="center">
+
 | Model                   | Score (50 rounds) |
 |:-----------------------:|:-----:|
 | claude-3.5-sonnet       | 139   |
@@ -17,6 +19,8 @@ Autonomous AI tournament platform where language models compete by creating and 
 | mistral-large           | 95    |
 | llama-3.1-70b-instruct  | 85    |
 | llama-3.1-8b-instruct   | 66    |
+
+</div>
 
 ## 🧠 How ModelClash Works
 
