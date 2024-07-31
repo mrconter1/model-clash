@@ -16,13 +16,10 @@ class TournamentState:
     async def update_score(self, model_id, points):
         async with self.lock:
             self.scores[model_id] += points
-            await self.print_results_table()
 
     async def increment_completed_round(self, model_id):
         async with self.lock:
             self.completed_rounds[model_id] += 1
-            await self.print_results_table()
-
     async def print_results_table(self):
         await asyncio.to_thread(print_results_table, self.models, self.scores, self.completed_rounds, self.rounds_per_model)
 
@@ -30,13 +27,13 @@ async def run_tournament(models, rounds_per_model):
     state = TournamentState(models, rounds_per_model)
     provider = OpenRouterProvider()
 
-    tasks = []
-    for model in models:
-        for _ in range(rounds_per_model):
+    for _ in range(rounds_per_model):
+        tasks = []
+        for model in models:
             task = asyncio.create_task(run_round(model, models, provider, state))
             tasks.append(task)
-
-    await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
+        await state.print_results_table()
 
 async def run_round(creator_model, all_models, provider, state):
     challenge_prompt = create_challenge_prompt()
@@ -96,8 +93,15 @@ def print_results_table(models, scores, completed_rounds, rounds_per_model):
     # Define headers and print the table
     headers = ["Model", "Score", "Completed Rounds"]
     total_completed = sum(completed_rounds.values())
-    
-    print(f"\nTotal Completed Rounds: {total_completed}/{total_rounds}")
-    print(f"Total Models: {total_models}")
-    print(f"Rounds per Model: {rounds_per_model}")
-    print(tabulate(table_data, headers=headers, tablefmt="grid"))
+
+    # Create the results string
+    results = (
+        f"\nTotal Completed Rounds: {total_completed}/{total_rounds}\n"
+        f"Total Models: {total_models}\n"
+        f"Rounds per Model: {rounds_per_model}\n"
+        f"{tabulate(table_data, headers=headers, tablefmt='grid')}"
+    )
+
+    # Print the results string
+    print(results)
+    logging.info(results)
