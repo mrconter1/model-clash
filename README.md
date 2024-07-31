@@ -1,14 +1,14 @@
-# ModelClash: Dynamic LLM Evaluation Tournament
+# 🏆 ModelClash: Autonomous Benchmark Tournament for AI
 
 `ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive tournament environment. It challenges AI models to create and solve a wide variety of problems across different domains, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
-## How ModelClash Works
+## 🧠 How ModelClash Works
 
-### Tournament Structure
+### 🏟️ Tournament Structure
 
 The tournament consists of a configurable number of rounds per participating model. Each model's final score is the sum of points earned across all rounds.
 
-### Round Gameplay
+### 🎯 Round Gameplay
 
 1. **Challenge Creation**: Creates any type of challenge by creating test cases that it knows it could solve by figuring out and implementing a function X.
 2. **Self-Solving**: The creator, with no memory of the creation process, tries to solve its own challenge.
@@ -16,7 +16,7 @@ The tournament consists of a configurable number of rounds per participating mod
 
 This process is repeated for a predetermined number of rounds for each model, ensuring every participant gets an equal number of opportunities to create challenges.
 
-### Round Scoring
+### 📊 Round Scoring
 
 If model fails to create a parsable problem or solve its own challenge, the round ends.
 
@@ -25,7 +25,7 @@ In case of a valid challenge:
 - For each stumped opponent: Creator gains 1 point
 - For each successful opponent: Opponent gains 1 point
 
-## Tournament Results
+## 🏅 Tournament Results
 
 | Model                   | Score |
 |-------------------------|-------|
@@ -42,7 +42,7 @@ In case of a valid challenge:
 
 Scores after 10 rounds per model.
 
-## 🏆 Comparison to traditional benchmarks
+## 📈 Comparison to traditional benchmarks
 
 | Feature                                           | ModelClash | MMLU | HellaSwag | GSM-8K | MT-Bench | AlpacaEval | Chatbot Arena |
 |---------------------------------------------------|:----------:|:----:|:---------:|:------:|:--------:|:----------:|:-------------:|
@@ -53,7 +53,7 @@ Scores after 10 rounds per model.
 | Automatically scales to model capabilities        |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 | Tests both problem creation and solving abilities |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 
-## Frequently Asked Questions
+## ❓ Frequently Asked Questions
 
 **Q: What prevents a model from making nonsensical, ambiguous, impossible or unfair challenges?**
 
@@ -63,14 +63,14 @@ A: If it fails to solve its own challenge it won't get any score that round.
 
 A: Specialized models may excel in their niche but struggle elsewhere, limiting their overall score.
 
-## 🛠 Getting Started
+## 🚀 Getting Started
 
-### Prerequisites
+### 📋 Prerequisites
 
 - Python 3.9+
 - OpenRouter API key
 
-### Installation
+### 💻 Installation
 
 1. Clone the repository:
    ```
@@ -88,7 +88,7 @@ A: Specialized models may excel in their niche but struggle elsewhere, limiting 
    export OPENROUTER_API_KEY='your-openrouter-api-key'
    ```
 
-### Usage
+### 🖥️ Usage
 
 Run the main script:
 
@@ -96,15 +96,15 @@ Run the main script:
 python main.py
 ```
 
-## 🤝 Contributing
+## 👥 Contributing
 
 Contributions are welcome! Please fork the project, create a feature branch, and open a pull request.
 
-## 📜 License
+## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## 📬 Contact
+## 📧 Contact
 
 Rasmus Lindahl - rasmus.lindahl1996@gmail.com
 
