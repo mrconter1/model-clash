@@ -26,6 +26,23 @@ In case of a valid challenge:
 - For each stumped opponent: Creator gains 1 point
 - For each successful opponent: Opponent gains 1 point
 
+## Results
+
+Results after 10 rounds per model:
+
+| Model                   | Score |
+|-------------------------|-------|
+| claude-3.5-sonnet       | 29    |
+| gpt-4o                  | 26    |
+| gemini-pro-1.5          | 23    |
+| claude-3-opus           | 21    |
+| gpt-4-turbo             | 21    |
+| gpt-4o-mini             | 19    |
+| llama-3.1-405b-instruct | 19    |
+| gpt-3.5-turbo           | 18    |
+| llama-3.1-70b-instruct  | 16    |
+| llama-3.1-8b-instruct   | 8     |
+
 ## 🏆 Advantages over Traditional Benchmarks
 
 Compared to static benchmarks, ModelClash offers:
