@@ -64,8 +64,8 @@ Compared to static benchmarks, ModelClash offers:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/ModelClash.git
-   cd ModelClash
+   git clone https://github.com/mrconter1/model-clash
+   cd MODELCLASH
    ```
 
 2. Install required packages:
