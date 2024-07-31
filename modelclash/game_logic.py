@@ -88,5 +88,8 @@ def print_results_table(models, scores, completed_rounds, rounds_per_model):
     headers = ["Model", "Score", "Completed Rounds"]
     total_completed = sum(completed_rounds.values())
     total_rounds = len(models) * rounds_per_model
+    
     print(f"\nTotal Completed Rounds: {total_completed}/{total_rounds}")
+    print(f"Total Models: {len(models)}")
+    print(f"Rounds per Model: {rounds_per_model}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
