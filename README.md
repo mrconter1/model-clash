@@ -42,15 +42,16 @@ In case of a valid challenge:
 
 Scores after 10 rounds per model.
 
-## 🏆 Advantages over Traditional Benchmarks
+## 🏆 Comparison to traditional benchmarks
 
-Compared to static benchmarks, ModelClash offers:
-
-1. **Automatic Challenge Generation**: Eliminates manual creation, reducing human bias.
-2. **Infinite Scalability**: Adapts to evolving model capabilities.
-3. **Living Benchmark**: Real-time generation prevents memorization and data leakage.
-4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities.
-5. **Extreme Diversity**: Covers a wide range of problem types and domains.
+| Feature                                           | ModelClash | MMLU | HellaSwag | GSM-8K | MT-Bench | AlpacaEval | Chatbot Arena |
+|---------------------------------------------------|:----------:|:----:|:---------:|:------:|:--------:|:----------:|:-------------:|
+| Human-free challenge design                       |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
+| Automatic evaluation                              |    [x]     |  [x] |    [x]    |   [x]  |    [x]   |     [x]    |      [ ]      |
+| Automatically scales to model capabilities        |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
+| General challenges                                |    [x]     |  [x] |    [x]    |   [ ]  |    [x]   |     [ ]    |      [x]      |
+| Tests both problem creation and solving abilities |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
+| Immune to dataset leakage                         |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [x]      |
 
 ## 🛠 Getting Started
 
