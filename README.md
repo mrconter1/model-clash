@@ -46,7 +46,7 @@ Scores after 10 rounds per model.
 
 | Feature                                           | ModelClash | MMLU | HellaSwag | GSM-8K | MT-Bench | AlpacaEval | Chatbot Arena |
 |---------------------------------------------------|:----------:|:----:|:---------:|:------:|:--------:|:----------:|:-------------:|
-| Human-free challenge design                       |    :heavy_check_mark:     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
+| Human-free challenge design                       |    :heavy_check_mark:     |  ❌ |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
 | Automatic evaluation                              |    [x]     |  [x] |    [x]    |   [x]  |    [x]   |     [x]    |      [ ]      |
 | Automatically scales to model capabilities        |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
 | General challenges                                |    [x]     |  [x] |    [x]    |   [ ]  |    [x]   |     [ ]    |      [x]      |
