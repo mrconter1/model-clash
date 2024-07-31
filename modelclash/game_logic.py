@@ -108,6 +108,7 @@ def print_results_table(models, scores, completed_rounds, rounds_per_model):
     total_completed = sum(completed_rounds.values())
     
     print(f"\nTotal Completed Rounds: {total_completed}/{total_rounds}")
-    print(f"Total Models (excluding OO): {total_models}")
+    #print(f"Total Models (excluding OO): {total_models}")
+    print(f"Total Models: {total_models}")
     print(f"Rounds per Model: {rounds_per_model}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
