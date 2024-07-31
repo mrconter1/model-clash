@@ -1,4 +1,4 @@
-# ModelClash: An Autonomous Benchmark Tournament
+# 🏆 ModelClash: Autonomous Benchmark Tournament
 
 `ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive tournament environment. It challenges AI models to create and solve a wide variety of problems across different domains, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
