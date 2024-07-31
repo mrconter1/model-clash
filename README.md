@@ -1,6 +1,6 @@
-# 🏆 ModelClash: Autonomous Benchmark Tournament
+# 🏆 ModelClash: Autonomous AI Tournament
 
-`ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive tournament environment. It challenges AI models to create and solve a wide variety of problems across different domains, offering an adaptive approach to benchmarking that evolves with AI advancements.
+Autonomous AI tournament with self-generated challenges for competitive language model evaluation.
 
 ## 🧠 How ModelClash Works
 
@@ -103,6 +103,21 @@ Contributions are welcome! Please fork the project, create a feature branch, and
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
+## 📚 Citation
+
+If you use ModelClash in your research or wish to refer to it, please use the following BibTeX entry:
+
+```bibtex
+@misc{lindahl2024modelclash,
+  author = {Lindahl, Rasmus},
+  title = {ModelClash: Autonomous AI Tournament with Self-Generated Challenges for Competitive Language Model Evaluation},
+  year = {2024},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/mrconter1/model-clash}}
+}
+```
 
 ## 📧 Contact
 
