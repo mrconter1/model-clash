@@ -19,7 +19,8 @@ MODELS = [
     "openai/gpt-4o-mini",
     "meta-llama/llama-3.1-8b-instruct",
     "meta-llama/llama-3.1-70b-instruct",
-    "meta-llama/llama-3.1-405b-instruct"
+    "meta-llama/llama-3.1-405b-instruct",
+    "mistralai/mistral-large"
 ]
 
 async def main():
