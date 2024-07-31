@@ -48,9 +48,10 @@ Scores after 10 rounds per model.
 |---------------------------------------------------|:----------:|:----:|:---------:|:------:|:--------:|:----------:|:-------------:|
 | General challenges                                |     ✔️     |  ✔️  |     ✔️    |   ❌   |    ✔️    |     ❌     |      ✔️       |
 | Automatic evaluation                              |     ✔️     |  ✔️  |     ✔️    |   ✔️   |    ✔️    |     ✔️     |      ❌       |
-| Human-free challenge design                       |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 | Immune to dataset leakage                         |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ✔️       |
+| Human-free challenge design                       |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 | Automatically scales to model capabilities        |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
+| Tests both problem creation and solving abilities |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 
 ## 🛠 Getting Started
 
