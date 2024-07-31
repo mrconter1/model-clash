@@ -1,6 +1,23 @@
 # 🏆 ModelClash: Autonomous AI Tournament
 
-Autonomous AI tournament with self-generated challenges for competitive language model evaluation.
+Autonomous AI tournament platform where language models compete by creating and solving self-generated challenges across diverse domains. Unlike other benchmarks, ModelClash offers a diverse human-free approach to AI evaluation that automatically scale with model capabilities, naturally resists benchmark saturation, and assesses both problem-solving and problem-creation skills.
+
+## 🏅 Tournament Results
+
+| Model                   | Score |
+|-------------------------|-------|
+| claude-3.5-sonnet       | 29    |
+| gpt-4o                  | 26    |
+| gemini-pro-1.5          | 23    |
+| claude-3-opus           | 21    |
+| gpt-4-turbo             | 21    |
+| gpt-4o-mini             | 19    |
+| llama-3.1-405b-instruct | 19    |
+| gpt-3.5-turbo           | 18    |
+| llama-3.1-70b-instruct  | 16    |
+| llama-3.1-8b-instruct   | 8     |
+
+Scores after 10 rounds per model.
 
 ## 🧠 How ModelClash Works
 
@@ -24,23 +41,6 @@ In case of a valid challenge:
 - For successful self-solve: Creator gains 1 point
 - For each stumped opponent: Creator gains 1 point
 - For each successful opponent: Opponent gains 1 point
-
-## 🏅 Tournament Results
-
-| Model                   | Score |
-|-------------------------|-------|
-| claude-3.5-sonnet       | 29    |
-| gpt-4o                  | 26    |
-| gemini-pro-1.5          | 23    |
-| claude-3-opus           | 21    |
-| gpt-4-turbo             | 21    |
-| gpt-4o-mini             | 19    |
-| llama-3.1-405b-instruct | 19    |
-| gpt-3.5-turbo           | 18    |
-| llama-3.1-70b-instruct  | 16    |
-| llama-3.1-8b-instruct   | 8     |
-
-Scores after 10 rounds per model.
 
 ## 📈 Comparison to traditional benchmarks
 
@@ -100,10 +100,6 @@ python main.py
 
 Contributions are welcome! Please fork the project, create a feature branch, and open a pull request.
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
 ## 📚 Citation
 
 If you use ModelClash in your research or wish to refer to it, please use the following BibTeX entry:
@@ -118,6 +114,10 @@ If you use ModelClash in your research or wish to refer to it, please use the fo
   howpublished = {\url{https://github.com/mrconter1/model-clash}}
 }
 ```
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📧 Contact
 
