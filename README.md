@@ -4,8 +4,10 @@ Autonomous AI tournament platform where language models compete by creating and 
 
 ## 🏅 Tournament Results
 
-| Model                   | Score |
-|-------------------------|-------|
+<div align="center">
+
+| Model                   | Score (10 rounds) |
+|:-----------------------:|:-----:|
 | claude-3.5-sonnet       | 29    |
 | gpt-4o                  | 26    |
 | gemini-pro-1.5          | 23    |
@@ -17,7 +19,7 @@ Autonomous AI tournament platform where language models compete by creating and 
 | llama-3.1-70b-instruct  | 16    |
 | llama-3.1-8b-instruct   | 8     |
 
-Scores after 10 rounds per model.
+</div>
 
 ## 🧠 How ModelClash Works
 
