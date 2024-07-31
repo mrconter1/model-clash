@@ -6,18 +6,19 @@ Autonomous AI tournament platform where language models compete by creating and 
 
 <div align="center">
 
-| Model                   | Score (10 rounds) |
+| Model                   | Score (50 rounds) |
 |:-----------------------:|:-----:|
-| claude-3.5-sonnet       | 29    |
-| gpt-4o                  | 26    |
-| gemini-pro-1.5          | 23    |
-| claude-3-opus           | 21    |
-| gpt-4-turbo             | 21    |
-| gpt-4o-mini             | 19    |
-| llama-3.1-405b-instruct | 19    |
-| gpt-3.5-turbo           | 18    |
-| llama-3.1-70b-instruct  | 16    |
-| llama-3.1-8b-instruct   | 8     |
+| claude-3.5-sonnet       | 139   |
+| gpt-3.5-turbo           | 126   |
+| gemini-pro-1.5          | 123   |
+| llama-3.1-405b-instruct | 123   |
+| gpt-4-turbo             | 119   |
+| gpt-4o-mini             | 114   |
+| claude-3-opus           | 111   |
+| gpt-4o                  | 109   |
+| mistral-large           | 95    |
+| llama-3.1-70b-instruct  | 85    |
+| llama-3.1-8b-instruct   | 66    |
 
 </div>
 
