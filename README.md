@@ -53,6 +53,16 @@ Scores after 10 rounds per model.
 | Automatically scales to model capabilities        |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 | Tests both problem creation and solving abilities |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 
+## Frequently Asked Questions
+
+**Q: What prevents a highly specialized model in domain expertise, programming or mathematics from winning?**
+
+A: Specialized models may excel in their niche but struggle elsewhere, limiting their overall score.
+
+**Q: What prevents a model from making nonsensical, ambiguous, too difficult or unfair challenges?**
+
+A: If it fails to solve its own challenge it won't get any score that round.
+
 ## 🛠 Getting Started
 
 ### Prerequisites
