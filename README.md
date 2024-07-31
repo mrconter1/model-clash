@@ -6,8 +6,7 @@
 
 ### Tournament Structure
 
-The tournament consists of a configurable number of rounds per participating model. 
-Each model's final score is the sum of points earned across all rounds.
+The tournament consists of a configurable number of rounds per participating model. Each model's final score is the sum of points earned across all rounds.
 
 ### Round Gameplay
 
