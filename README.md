@@ -51,7 +51,6 @@ Scores after 10 rounds per model.
 | Human-free challenge design                       |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 | Immune to dataset leakage                         |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ✔️       |
 | Automatically scales to model capabilities        |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
-| Tests both problem creation and solving abilities |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 
 ## 🛠 Getting Started
 
