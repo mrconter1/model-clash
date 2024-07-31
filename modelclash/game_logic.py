@@ -44,7 +44,7 @@ async def run_round(creator_model, all_models, provider, state):
     
     visible_tests, hidden_tests = extract_test_cases(challenge_response)
     if not visible_tests or not hidden_tests:
-        logging.error(f"Failed to extract test cases for {creator_model.name}")
+        logging.error(f"Failed to create valid challenge: Couldn't parse challenge from {creator_model.name}")
         await state.increment_completed_round(creator_model.unique_id)
         return  # Created challenge can't be parsed, round ends
 
@@ -56,6 +56,7 @@ async def run_round(creator_model, all_models, provider, state):
     
     if not creator_success:
         await state.increment_completed_round(creator_model.unique_id)
+        logging.error(f"Failed to create valid challenge: {creator_model.name} couldn't solve it's own challenge")
         return  # If creator can't solve its own challenge, round ends
 
     await state.update_score(creator_model.unique_id, 1)  # Point for solving own challenge
