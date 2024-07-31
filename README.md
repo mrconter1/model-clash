@@ -46,12 +46,12 @@ Scores after 10 rounds per model.
 
 | Feature                                           | ModelClash | MMLU | HellaSwag | GSM-8K | MT-Bench | AlpacaEval | Chatbot Arena |
 |---------------------------------------------------|:----------:|:----:|:---------:|:------:|:--------:|:----------:|:-------------:|
-| Human-free challenge design                       |    :heavy_check_mark:     |  ❌ |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
-| Automatic evaluation                              |    [x]     |  [x] |    [x]    |   [x]  |    [x]   |     [x]    |      [ ]      |
-| Automatically scales to model capabilities        |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
-| General challenges                                |    [x]     |  [x] |    [x]    |   [ ]  |    [x]   |     [ ]    |      [x]      |
-| Tests both problem creation and solving abilities |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [ ]      |
-| Immune to dataset leakage                         |    [x]     |  [ ] |    [ ]    |   [ ]  |    [ ]   |     [ ]    |      [x]      |
+| General challenges                                |     ✔️     |  ✔️  |     ✔️    |   ❌   |    ✔️    |     ❌     |      ✔️       |
+| Automatic evaluation                              |     ✔️     |  ✔️  |     ✔️    |   ✔️   |    ✔️    |     ✔️     |      ❌       |
+| Human-free challenge design                       |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
+| Immune to dataset leakage                         |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ✔️       |
+| Automatically scales to model capabilities        |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
+| Tests both problem creation and solving abilities |     ✔️     |  ❌  |     ❌    |   ❌   |    ❌    |     ❌     |      ❌       |
 
 ## 🛠 Getting Started
 
