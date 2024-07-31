@@ -92,23 +92,12 @@ def print_results_table(models, scores, completed_rounds, rounds_per_model):
     # OO (Omniscient Oracle) is a theoretical model that is defined as a model that always
     # can solve any valid challenge as well as capable of creating valid questions which
     # no other model can solve.
-    # ----------
-    # Calculate OO score
-    oo_challenge_points = rounds_per_model                                          # Points for OO creating and solving self-created challenges
-    oo_solving_points = (total_models - 1) * rounds_per_model                       # Points for OO solving all challenges posed by other models
-    oo_others_failing_points = (total_models - 1) * rounds_per_model                # Points for other models failing OO's challenges
-    oo_score = oo_challenge_points + oo_solving_points + oo_others_failing_points
-    
-    # Add the OO score at the top
-    #table_data.insert(0, ("Omniscient Oracle (OO)", oo_score, "-"))
-    # ----------
 
     # Define headers and print the table
     headers = ["Model", "Score", "Completed Rounds"]
     total_completed = sum(completed_rounds.values())
     
     print(f"\nTotal Completed Rounds: {total_completed}/{total_rounds}")
-    #print(f"Total Models (excluding OO): {total_models}")
     print(f"Total Models: {total_models}")
     print(f"Rounds per Model: {rounds_per_model}")
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
