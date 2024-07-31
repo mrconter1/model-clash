@@ -1,79 +1,54 @@
-# ModelClash: Dynamic LLM Evaluation Duel
+# ModelClash: Dynamic LLM Evaluation Tournament
 
-`ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive environment. It pits AI models against each other in creative problem-solving duels, offering an adaptive approach to benchmarking that evolves with AI advancements.
+`ModelClash` is a framework for evaluating and comparing Large Language Models (LLMs) in a dynamic, competitive tournament environment. It challenges AI models to create and solve a wide variety of problems across different domains, offering an adaptive approach to benchmarking that evolves with AI advancements.
 
-## Table of Contents
-- [How ModelClash Works](#-how-modelclash-works)
-- [Advantages over Traditional Benchmarks](#-top-5-advantages-over-traditional-benchmarks)
-- [Results](#-results)
-- [Getting Started](#-getting-started)
-- [Example Challenges](#-example-challenges)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
+## How ModelClash Works
 
-## 🎮 How ModelClash Works
+### Tournament Structure
 
-### Duel Structure
+The tournament consists of a configurable number of rounds per participating model. 
+Each model's final score is the sum of points earned across all rounds.
 
-1. **Challenge Creation**: A model generates a challenge consisting of N visible test cases and M hidden test cases.
+### Round Gameplay
 
-2. **Challenge Solving**: Both models attempt to solve the challenge by implementing a function that passes all visible and hidden test cases.
+1. **Challenge Creation**: Creates any type of challenge by creating test cases that it knows it could solve by figuring out and implementing a function X.
+2. **Self-Solving**: The creator, with no memory of the creation process, tries to solve its own challenge.
+3. **Opponent Solving**: If the creator succeeds, other models attempt the challenge.
 
-3. **Role Switch**: Models switch roles, with the previous solver becoming the challenge creator and vice versa.
+This process is repeated for a predetermined number of rounds for each model, ensuring every participant gets an equal number of opportunities to create challenges.
 
-> [!NOTE]
->
-> The challenge creator is explicitly informed it must later solve its own challenge without access to any memory of the creation process. It is also told that the goal is to create a challenge the opponent will fail while ensuring its own success.
+### Round Scoring
 
-### Scoring System
+If model fails to create a parsable problem or solve its own challenge, the round ends.
 
-- Creator solves, opponent fails: Creator +3 points
-- Both solve: Creator +1 point, Opponent +2 points
-- Creator fails, opponent solves: Creator -1 point, Opponent +3 points
+In case of a valid challenge:
+- For successful self-solve: Creator gains 1 point
+- For each stumped opponent: Creator gains 1 point
+- For each successful opponent: Opponent gains 1 point
 
-This system encourages creating challenges that are difficult yet solvable.
+## 🏆 Advantages over Traditional Benchmarks
 
-## 🏆 Top 5 Advantages over Traditional Benchmarks
+Compared to static benchmarks, ModelClash offers:
 
-Compared to other existing benchmark approaches such as [MMLU](https://github.com/hendrycks/test), [GPQA](https://github.com/idavidrein/gpqa), or [Chatbot Arena](https://chat.lmsys.org/), ModelClash offers:
-
-1. **Automatic Challenge Generation**: Eliminates the need for manual challenge creation, saving time and reducing human bias.
-2. **Infinite Scalability**: Adapts to any level of model capability, ensuring the benchmark remains relevant as AI technology advances.
-3. **Living Benchmark**: Real-time challenge generation prevents memorization and data leakage
-4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities, providing a more holistic assessment.
-5. **Extreme Diversity**: Can theoretically cover a large range of problem types and domains.
-
-## 📊 Results
-
-| Player A                   | Player B                   | A's Score | B's Score | Rounds Played |
-|----------------------------|----------------------------|-----------|-----------|---------------|
-| claude-3-5-sonnet-20240620 | claude-3-5-sonnet-20240620 | 48        | 43        | 50            |
-| claude-3-5-sonnet-20240620 | gpt-3.5-turbo              | 74        | 48        | 69            |
-| claude-3-5-sonnet-20240620 | gpt-4o                     | 39        | 39        | 52            |
-| claude-3-5-sonnet-20240620 | gpt-4o-mini                | 37        | 34        | 49            |
-| gpt-3.5-turbo              | gpt-3.5-turbo              | 94        | 75        | 106           |
-| gpt-3.5-turbo              | gpt-4o                     | 46        | 82        | 76            |
-| gpt-3.5-turbo              | gpt-4o-mini                | 54        | 71        | 64            |
-| gpt-4o                     | gpt-4o                     | 30        | 30        | 55            |
-| gpt-4o-mini                | gpt-4o                     | 46        | 57        | 51            |
-| gpt-4o-mini                | gpt-4o-mini                | 55        | 43        | 49            |
-
-This benchmark highlights distinctive strengths among different AI models. Claude-3.5-sonnet and GPT-4o show close competition, often achieving similar scores. GPT-4o and its mini variant generally outperform GPT-3.5-turbo, highlighting generational improvements. GPT-4o-mini performs competitively, often close to its full-sized counterpart.
+1. **Automatic Challenge Generation**: Eliminates manual creation, reducing human bias.
+2. **Infinite Scalability**: Adapts to evolving model capabilities.
+3. **Living Benchmark**: Real-time generation prevents memorization and data leakage.
+4. **Comprehensive Evaluation**: Tests both problem creation and solving abilities.
+5. **Extreme Diversity**: Covers a wide range of problem types and domains.
 
 ## 🛠 Getting Started
 
 ### Prerequisites
 
 - Python 3.9+
-- API keys (as needed) for OpenAI, Google (not yet fully supported), and Anthropic
+- OpenRouter API key
 
 ### Installation
 
 1. Clone the repository:
    ```
-   git clone https://github.com/mrconter1/model-clash.git
-   cd MODEL-CLASH
+   git clone https://github.com/yourusername/ModelClash.git
+   cd ModelClash
    ```
 
 2. Install required packages:
@@ -81,11 +56,9 @@ This benchmark highlights distinctive strengths among different AI models. Claud
    pip install -r requirements.txt
    ```
 
-3. Set up API key environment variables:
+3. Set up API key environment variable:
    ```
-   export OPENAI_API_KEY='your-openai-api-key'
-   export GOOGLE_API_KEY='your-google-api-key'
-   export ANTHROPIC_API_KEY='your-anthropic-api-key'
+   export OPENROUTER_API_KEY='your-openrouter-api-key'
    ```
 
 ### Usage
@@ -93,28 +66,8 @@ This benchmark highlights distinctive strengths among different AI models. Claud
 Run the main script:
 
 ```
-python -m modelclash.main
+python main.py
 ```
-
-## 📊 Example Challenges
-
-Here are two examples of challenges generated by GPT-4o during ModelClash duels:
-
-1. Character Sorting and Deduplication
-```python
-assert X("banana") == "abn"
-assert X("apple") == "aelp"
-assert X("racecar") == "acer"
-```
-
-2. Morse Code Converter
-```python
-assert X("SOS") == "... --- ..."
-assert X("HELLO") == ".... . .-.. .-.. ---"
-assert X("123") == ".---- ..--- ...--"
-```
-
-These examples showcase the diversity and complexity of challenges that can be created in real-time by AI models.
 
 ## 🤝 Contributing
 
@@ -126,9 +79,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📬 Contact
 
-Rasmus Lindahl - rasmus.lindahl1996@gmail.com
+Your Name - your.email@example.com
 
-Project Link: [https://github.com/mrconter1/ModelClash](https://github.com/mrconter1/ModelClash)
+Project Link: [https://github.com/yourusername/ModelClash](https://github.com/yourusername/ModelClash)
 
 ---
 
