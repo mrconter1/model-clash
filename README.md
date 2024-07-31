@@ -96,9 +96,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📬 Contact
 
-Your Name - your.email@example.com
-
-Project Link: [https://github.com/yourusername/ModelClash](https://github.com/yourusername/ModelClash)
+Rasmus Lindahl - rasmus.lindahl1996@gmail.com
 
 ---
 
